@@ -43,13 +43,13 @@ public class Test extends HttpServlet {
 
                 out.println("<html><body>");
                 out.println("<h1>Hotel List</h1>");
-                out.println("<table border='1'><tr><th>ID</th><th>Name</th><th>Location</th></tr>");
+                out.println("<table border='1'><tr><th>ID</th><th>Catagorie</th><th>Address</th></tr>");
 
                 while (rs.next()) {
                     out.println("<tr>");
                     out.println("<td>" + rs.getInt("hotel_id") + "</td>");
                     out.println("<td>" + rs.getString("categorie") + "</td>");
-                    out.println("<td>" + rs.getString("Adress") + "</td>");
+                    out.println("<td>" + rs.getString("Address") + "</td>");
                     out.println("</tr>");
                 }
                 out.println("</table>");
