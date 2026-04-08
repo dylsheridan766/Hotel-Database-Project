@@ -47,9 +47,9 @@ public class Test extends HttpServlet {
 
                 while (rs.next()) {
                     out.println("<tr>");
-                    out.println("<td>" + rs.getInt("id") + "</td>");
-                    out.println("<td>" + rs.getString("name") + "</td>");
-                    out.println("<td>" + rs.getString("location") + "</td>");
+                    out.println("<td>" + rs.getInt("hotel_id") + "</td>");
+                    out.println("<td>" + rs.getString("categorie") + "</td>");
+                    out.println("<td>" + rs.getString("Adress") + "</td>");
                     out.println("</tr>");
                 }
                 out.println("</table>");
