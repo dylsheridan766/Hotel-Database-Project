@@ -3,6 +3,9 @@ src/main/resources/db.properties
 
 # Ignore the compiled output
 target/
+*.war
+*.jar
+.DS_Store
 
 # Ignore VS Code specific settings
 .vscode/
