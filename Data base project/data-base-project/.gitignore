@@ -1,0 +1,10 @@
+# Ignore the properties file with passwords
+src/main/resources/db.properties
+
+# Ignore the compiled output (the target folder)
+target/
+
+# Ignore VS Code specific settings
+.vscode/
+bin/
+*.log
