@@ -17,48 +17,65 @@ import jakarta.servlet.http.HttpServletResponse;
 
 @WebServlet("/testdb")
 public class Test extends HttpServlet {
+    
+    //whats being passed from html
+    private Properties prop = new Properties();
+
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setContentType("text/html");
         PrintWriter out = response.getWriter();
-        Properties prop = new Properties();
 
+    
+        String action = request.getParameter("action");
+        if (action == null) action = "list";
+
+    
         try (InputStream input = getServletContext().getResourceAsStream("/WEB-INF/classes/db.properties")) {
             if (input == null) {
                 out.println("Unable to find db.properties");
                 return;
             }
             prop.load(input);
-
-            String url = prop.getProperty("db.url");
-            String user = prop.getProperty("db.user");
-            String pass = prop.getProperty("db.password");
-
             Class.forName("org.postgresql.Driver");
 
-            String sql = "SELECT * FROM Hotels";
-
-            try (Connection conn = DriverManager.getConnection(url, user, pass);
-                 PreparedStatement pstmt = conn.prepareStatement(sql);
-                 ResultSet rs = pstmt.executeQuery()) {
-
-                out.println("<html><body>");
-                out.println("<h1>Hotel List</h1>");
-                out.println("<table border='1'><tr><th>ID</th><th>Catagorie</th><th>Adress</th></tr>");
-
-                while (rs.next()) {
-                    out.println("<tr>");
-                    out.println("<td>" + rs.getInt("hotel_id") + "</td>");
-                    out.println("<td>" + rs.getString("categorie") + "</td>");
-                    out.println("<td>" + rs.getString("Adresse") + "</td>");
-                    out.println("</tr>");
+            try (Connection conn = DriverManager.getConnection(
+                    prop.getProperty("db.url"), 
+                    prop.getProperty("db.user"), 
+                    prop.getProperty("db.password"))) {
+                
+                // handle the diffrent actions
+                switch (action) {
+                    case "list":
+                        listHotels(conn, out);
+                        break;
+                    default:
+                        out.println("Unknown action: " + action);
                 }
-                out.println("</table>");
-                out.println("</body></html>");
+
             }
-        } catch (ClassNotFoundException | SQLException e) {
-            out.println("<h3>Database Error: " + e.getMessage() + "</h3>");
         } catch (Exception e) {
-            out.println("<h3>General Error: " + e.getMessage() + "</h3>");
+            out.println("<h3>Error: " + e.getMessage() + "</h3>");
+        }
+    }
+
+    
+    private void listHotels(Connection conn, PrintWriter out) throws SQLException {
+        String sql = "SELECT * FROM Hotels";
+        
+        try (PreparedStatement pstmt = conn.prepareStatement(sql);
+             ResultSet rs = pstmt.executeQuery()) {
+
+            out.println("<html><body><h1>Hotel List</h1><table border='1'>");
+            out.println("<tr><th>ID</th><th>Categorie</th><th>Adresse</th></tr>");
+
+            while (rs.next()) {
+                out.println("<tr>");
+                out.println("<td>" + rs.getInt("hotel_id") + "</td>");
+                out.println("<td>" + rs.getString("categorie") + "</td>");
+                out.println("<td>" + rs.getString("Adresse") + "</td>");
+                out.println("</tr>");
+            }
+            out.println("</table></body></html>");
         }
     }
 }
