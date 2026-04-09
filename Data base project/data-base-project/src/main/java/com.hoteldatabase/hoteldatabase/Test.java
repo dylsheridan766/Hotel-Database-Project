@@ -125,15 +125,22 @@ public class Test extends HttpServlet {
             while (rs.next()) {
                 found = true;
                 out.println("<tr>");
-                out.println("<td>" + rs.getInt("hotel_id") + "</td>");
-                out.println("<td>" + rs.getString("room_number") + "</td>");
-                out.println("<td>" + rs.getString("Prix") + "</td>");
+
+                out.println("<td>" + rs.getInt("Chambre_id") + "</td>");
+                out.println("<td>" + rs.getInt("Hotel_ID") + "</td>");
+                out.println("<td>" + rs.getInt("Room_number") + "</td>");
+                out.println("<td>$" + rs.getInt("Prix") + "</td>");
+
                 out.println("<td>" + rs.getString("Commodites") + "</td>");
-                out.println("<td>" + rs.getString("Capacite") + "</td>");
+                out.println("<td>" + rs.getInt("Capacite") + "</td>");
                 out.println("<td>" + rs.getString("Vue") + "</td>");
-                out.println("<td>" + rs.getString("lit_extra") + "</td>");
-                out.println("<td>" + rs.getString("Superficie") + "</td>");
-                 out.println("<td>" + rs.getString("etat") + "</td>");
+                boolean extraLit = rs.getBoolean("Lit_Extra");
+                out.println("<td>" + (extraLit ? "Yes" : "No") + "</td>");
+
+                out.println("<td>" + rs.getInt("Superficie") + " m²</td>");
+                out.println("<td>" + rs.getString("Etat") + "</td>");
+
+            
                 out.println("</tr>");
             }
             if (!found) {
