@@ -21,6 +21,24 @@
         <input type="checkbox" name="useCap" value="true"> Filtrer par Capacité: 
         <input type="number" name="capVal" placeholder="e.x. 5">
     </div>
+    <div>
+        <input type="checkbox" name="useSup" value="true"> Filtrer par Superficie:
+        <input type="number" name="superVal" placeholder="e.x. 350">
+    </div>
+    <div>
+         <input type="checkbox" name="useChain" value="true"> Filtrer par Chaîne:
+         <input type="text" name="chainVal" placeholder="e.x. MGM Resorts">
+    </div>
+    <div>
+         <input type="checkbox" name="useCat" value="true"> Filtrer par Catégorie:
+         <input type="number" name="CatVal" placeholder="e.x. 4">
+    </div>
+    <div>
+         <input type="checkbox" name="usePrice" value="true"> Filtrer par Prix:
+         <input type="number" name="PriceVal" placeholder="e.x. 400">
+    </div>
+
+
 
     <button type="submit">Continue</button>
 </form>
