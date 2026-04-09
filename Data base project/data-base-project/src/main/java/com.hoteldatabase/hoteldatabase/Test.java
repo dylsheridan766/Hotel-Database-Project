@@ -52,6 +52,7 @@ public class Test extends HttpServlet {
                     case "search":
                         searchRooms(request, conn, out);
                         break;
+                    
                     default:
                         out.println("Unknown action: " + action);
                 }
@@ -106,8 +107,6 @@ if (!anyFilterSelected) {
     out.println("</body></html>");
     return; // This stops the rest of the code from running
 }
-
-
     //check the input box
     String sDateVal = request.getParameter("sDateVal");
     String eDateVal = request.getParameter("eDateVal");
@@ -116,9 +115,6 @@ if (!anyFilterSelected) {
     String supChain = request.getParameter("chainVal");
     String supCat = request.getParameter("CatVal");
     String supPrice = request.getParameter("PriceVal");
-
-
-
 
     //string builder to made the sql query that joins chambres,hotels and hotel_chains
     StringBuilder sql = new StringBuilder("Select c.*, hc.Name, h.adresse "+ " From Chambres c " + " Join Hotels h On c.Hotel_ID = h.Hotel_ID " + " Join Hotel_chains hc On h.chain_ID = hc.chain_ID " +" Where 1=1");
@@ -225,4 +221,27 @@ if (!anyFilterSelected) {
         out.println("<a href='index.jsp'>Retournez</a>");
     }
     }
+     private void createClient(HttpServletRequest request, Connection conn, PrintWriter out) throws SQLException {
+        //get the inputed data
+        String cName = request.getParameter("name");
+        String cAddress = request.getParameter("address");
+        String cEmail = request.getParameter("email");
+        String cNAS = request.getParameter("NAS");
+//the initial query
+         StringBuilder sql = new StringBuilder("Insert Into Clients (Nom,Addresse,Email,Nas) Values (?, ?, ?, ?)");
+        try (PreparedStatement pstmt = conn.prepareStatement(sql.toString())) {
+            pstmt.setString(1, cName);
+            pstmt.setString(2, cAddress);
+            pstmt.setString(3, cEmail);
+            pstmt.setString(4, cNAS);
+            int rowsInserted = pstmt.executeUpdate();
+
+            if (rowsInserted > 0) {
+        out.println("<h3>Compte enregistré avec succès</h3>");
+    }
+        } catch (Exception e) {
+            out.println("<h3>Error dans la créaction: " + e.getMessage() + "</h3>");
+}       
+
+           }
 }
