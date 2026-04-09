@@ -17,13 +17,17 @@ import jakarta.servlet.http.HttpServletResponse;
 
 @WebServlet("/testdb")
 public class Test extends HttpServlet {
+
     
     //whats being passed from html
     private Properties prop = new Properties();
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        response.setContentType("text/html; charset=UTF-8");
+        response.setCharacterEncoding("UTF-8");
         response.setContentType("text/html");
         PrintWriter out = response.getWriter();
+
 
     
         String action = request.getParameter("action");
