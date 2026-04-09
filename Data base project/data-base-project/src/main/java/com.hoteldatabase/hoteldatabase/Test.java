@@ -124,7 +124,7 @@ public class Test extends HttpServlet {
     }
 
     if(filterCat){
-        sql.append(" Or h.catagorie=?");
+        sql.append(" Or h.categorie=?");
     }
 
     if(filterPrice){
