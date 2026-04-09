@@ -48,6 +48,9 @@ public class Test extends HttpServlet {
                     case "list":
                         listHotels(conn, out);
                         break;
+                    case "search":
+                        searchRooms(request, conn, out);
+                        break;
                     default:
                         out.println("Unknown action: " + action);
                 }
@@ -77,5 +80,23 @@ public class Test extends HttpServlet {
             }
             out.println("</table></body></html>");
         }
+    }
+    private void searchRooms(HttpServletRequest request, Connection conn, PrintWriter out) throws SQLException {
+    //check the checkboxes
+    boolean filterDate = request.getParameter("useDate") != null;
+    boolean filterCap = request.getParameter("useCap") != null;
+    //check the input box
+    String DateVal = request.getParameter("dateVal");
+    String capVal = request.getParameter("capVal");
+
+    //string builder to made the sql query
+    StringBuilder sql = new StringBuilder("Select * From Chambres Where 1=1");
+
+    //add the other perameters if the box was checked
+    if(filterDate){
+        sql.append("And chambre_id Not In (Select chambre_id from Reservations_et_locations Where start_date < ? And end_date >?)");
+    }
+    
+    
     }
 }
