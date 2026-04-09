@@ -43,25 +43,16 @@
             <input type="number" name="PriceVal" placeholder="e.x. 400">
         </div>
         <button type="submit">Continuer</button>
-          <h3>Client Sign Up</h3>
-
-        <form>
-            <div>
-                Client ID: <input type="number" name="clID" placeholder="e.x. 54">
-            </div>
-            <div>
-                Name: <input type="text" name="name" placeholder="e.x. Jane Doe">
-            </div>
-            <div>
-                Address: <input type="text" name="address" placeholder="e.x. 613 park avenue">
-            </div>
-            <div>
-                NAS: <input type="number" name="NAS" placeholder="e.x. 123456789">
-            </div>
-            <button type="submit">Continuer</button>
-
-        </form>
     </form>
+          <h3>Devenir un Client!</h3>
+
+
+
+            <form action="clientsignup.jsp" method="GET">
+                <button type="submit">Enregistrer!</button>
+            </form>
+
+
         <h3>Fait une Réservation</h3>
         <form>
             <div>
