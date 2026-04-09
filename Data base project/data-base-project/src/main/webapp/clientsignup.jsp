@@ -19,7 +19,10 @@
             <div>
                 NAS: <input type="number" name="NAS" placeholder="e.x. 123456789">
             </div>
-            <button type="submit">Soumettre</button>
+            <form action="testdb" method="GET">
+                    <input type="hidden" name="action" value="append">
+                    <button type="submit">Soumettre</button>
+            </form>
            <button onclick="history.back()">Retourner</button>
 
         </form>
