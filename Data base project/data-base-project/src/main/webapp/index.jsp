@@ -45,39 +45,18 @@
         <button type="submit">Continuer</button>
     </form>
           <h3>Devenir un Client!</h3>
-
-
-
             <form action="clientsignup.jsp" method="GET">
                 <button type="submit">Enregistrer!</button>
             </form>
-
-
-        <h3>Fait une Réservation</h3>
-        <form>
-            <div>
-                Room ID: <input type="number" name="roomID" placeholder="e.x. 54">
-            </div>
-             <div>
-                Client ID: <input type="number" name="clientID" placeholder="e.x. 54">
-            </div>
-            <button type="submit">Continuer</button>
-
+        <h3>Réservations</h3>
+        <form action="reservation.jsp" method="GET">
+                <button type="submit">Reserver</button>
         </form>
-        <h3>Fait une Location</h3>
-        <form>
-            <div>
-                Room ID: <input type="number" name="rID" placeholder="e.x. 54">
-            </div>
-             <div>
-                Client ID: <input type="number" name="cID" placeholder="e.x. 54">
-            </div>
-            <div>
-                Employee ID: <input type="number" name="empID" placeholder="e.x. 54">
-            </div>
-            <button type="submit">Continuer</button>
-
+        <h3>Locations</h3>
+          <form action="location.jsp" method="GET">
+                <button type="submit">Louer</button>
         </form>
+
 
 </body>
 </html>
