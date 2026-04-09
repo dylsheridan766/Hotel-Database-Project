@@ -57,7 +57,10 @@ public class Test extends HttpServlet {
 
             }
         } catch (Exception e) {
+            out.println("<html><body>");
             out.println("<h3>Error: " + e.getMessage() + "</h3>");
+            out.println("<br><form action='index.jsp'><button type='submit'>Retourner à la recherche</button></form>");
+            out.println("</body></html>");
         }
     }
 
@@ -90,6 +93,17 @@ public class Test extends HttpServlet {
     boolean filterCat = request.getParameter("useCat") != null;
     boolean filterPrice = request.getParameter("usePrice") != null;
 
+    //make sure at least 1 box is checked
+    boolean anyFilterSelected = filterDate || filterCap || filterSup || filterChain || filterCat || filterPrice;
+
+if (!anyFilterSelected) {
+    out.println("<html><body>");
+    out.println("<h3 style='color:red;'>Error: Vous devez selectioner au moins 1 critere</h3>");
+    out.println("<a href='index.jsp'>Retournez</a>");
+    out.println("</body></html>");
+    return; // This stops the rest of the code from running
+}
+
 
     //check the input box
     String sDateVal = request.getParameter("sDateVal");
@@ -104,7 +118,7 @@ public class Test extends HttpServlet {
 
 
     //string builder to made the sql query that joins chambres,hotels and hotel_chains
-    StringBuilder sql = new StringBuilder("Select c.*, hc.Name"+ " From Chambres c " + " Join Hotels h On c.Hotel_ID = h.Hotel_ID " + " Join Hotel_chains hc On h.chain_ID = hc.chain_ID " +" Where 1=1");
+    StringBuilder sql = new StringBuilder("Select c.*, hc.Name "+ " From Chambres c " + " Join Hotels h On c.Hotel_ID = h.Hotel_ID " + " Join Hotel_chains hc On h.chain_ID = hc.chain_ID " +" Where 1=1");
 
     //add the other perameters if the box was checked
     if(filterCap){
@@ -158,6 +172,8 @@ public class Test extends HttpServlet {
         if (filterPrice) {
              pstmt.setInt(i++, Integer.parseInt(supPrice));
         }
+            
+        
         try (ResultSet rs = pstmt.executeQuery()) {
             //make the table
             out.println("<html><body>");
@@ -186,16 +202,26 @@ public class Test extends HttpServlet {
                 out.println("<td>" + rs.getInt("Superficie") + " m²</td>");
                 out.println("<td>" + rs.getString("Etat") + "</td>");
 
-            
-                out.println("</tr>");
+             
+            out.println("</tr>");
+                
             }
+           
+
+          
+
             if (!found) {
                 out.println("<tr><td colspan='11'>Aucun hôtel ne répond à ces exigences.</td></tr>");
             }
-            out.println("</table></body></html>");
+            out.println("</table>");
+            out.println("<br><form action='index.jsp'><button type='submit'>Retourner à la recherche</button></form>");
+            out.println("</body></html>");
+
+          
         }
     } catch (IllegalArgumentException e) {
         out.println("<p style='color:red;'>Error: veuillez entrer une date valid.</p>");
+        out.println("<a href='index.jsp'>Retournez</a>");
     }
     }
 }
