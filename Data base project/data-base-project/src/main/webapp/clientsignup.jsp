@@ -14,7 +14,7 @@
                 Address: <input type="text" name="address" placeholder="e.x. 613 park avenue">
             </div>
             <div>
-                E-mail: <input type="text" name="email" placeholder="e.x. 622  bogdan avenue">
+                E-mail: <input type="text" name="email" placeholder="e.x. scientologytoday@gmail.com">
             </div>
             <div>
                 NAS: <input type="number" name="NAS" placeholder="e.x. 123456789">
