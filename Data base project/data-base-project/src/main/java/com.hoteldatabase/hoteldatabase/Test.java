@@ -104,31 +104,31 @@ public class Test extends HttpServlet {
 
 
     //string builder to made the sql query that joins chambres,hotels and hotel_chains
-    StringBuilder sql = new StringBuilder("Select c.*, hc.Name"+ " From Chambres c " + " Join Hotels h On c.Hotel_ID = h.Hotel_ID " + " Join Hotel_chains hc On h.chain_ID = hc.chain_ID " +" Where 1=0");
+    StringBuilder sql = new StringBuilder("Select c.*, hc.Name"+ " From Chambres c " + " Join Hotels h On c.Hotel_ID = h.Hotel_ID " + " Join Hotel_chains hc On h.chain_ID = hc.chain_ID " +" Where 1=1");
 
     //add the other perameters if the box was checked
     if(filterCap){
-        sql.append(" Or Capacite >=?");
+        sql.append(" And Capacite >=?");
     }
 
     if(filterDate){
-        sql.append(" Or chambre_id Not In (Select chambre_id from Reservations_et_locations Where start_date < ? And end_date >?)");
+        sql.append(" And chambre_id Not In (Select chambre_id from Reservations_et_locations Where start_date < ? And end_date >?)");
     }
 
     if(filterSup){
-        sql.append(" Or superficie >= ?");
+        sql.append(" And superficie >= ?");
     }
 
     if(filterChain){
-        sql.append(" Or chain_id = ?");
+        sql.append(" And chain_id = ?");
     }
 
     if(filterCat){
-        sql.append(" Or h.categorie=?");
+        sql.append(" And h.categorie=?");
     }
 
     if(filterPrice){
-        sql.append(" Or prix<= ?");
+        sql.append(" And prix<= ?");
     }
 
     try (PreparedStatement pstmt = conn.prepareStatement(sql.toString())) {
