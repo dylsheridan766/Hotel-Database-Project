@@ -11,8 +11,6 @@
                 Employee ID: <input type="number" name="empID" placeholder="e.x. 54">
             </div>
             <button type="submit">Soumettre</button>
-           <form action="index.jsp">
-               <button type="submit">Retourner</button>
-           </form>
+           <button onclick="history.back()">Retourner</button>
         </form>
 </html>

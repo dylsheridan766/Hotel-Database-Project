@@ -12,9 +12,7 @@
                 NAS: <input type="number" name="NAS" placeholder="e.x. 123456789">
             </div>
             <button type="submit">Soumettre</button>
-           <form action="index.jsp">
-               <button type="submit">Retourner</button>
-           </form>
+           <button onclick="history.back()">Retourner</button>
 
         </form>
 </html>
