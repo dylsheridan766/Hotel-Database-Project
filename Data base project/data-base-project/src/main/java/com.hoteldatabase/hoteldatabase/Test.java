@@ -47,7 +47,7 @@ public class Test extends HttpServlet {
                 // handle the diffrent actions
                 switch (action) {
                     case "list":
-                        listHotels(conn, out);
+                        listChains(conn, out);
                         break;
                     case "search":
                         searchRooms(request, conn, out);
@@ -66,20 +66,22 @@ public class Test extends HttpServlet {
     }
 
     
-    private void listHotels(Connection conn, PrintWriter out) throws SQLException {
-        String sql = "SELECT * FROM Hotels";
+    private void listChains(Connection conn, PrintWriter out) throws SQLException {
+        String sql = "SELECT * FROM Hotel_chains";
         
         try (PreparedStatement pstmt = conn.prepareStatement(sql);
              ResultSet rs = pstmt.executeQuery()) {
 
-            out.println("<html><body><h1>Hotel List</h1><table border='1'>");
-            out.println("<tr><th>ID</th><th>Categorie</th><th>Adresse</th></tr>");
+            out.println("<html><body><h1>Lists de Chanis de Hotel</h1><table border='1'>");
+            out.println("<tr><th>Nom</th><th>Adress du sciege social</th><th>Nombre de Hotels</th><th>Email de contact</th><th>Numéro de téléphone</th></tr>");
 
             while (rs.next()) {
                 out.println("<tr>");
-                out.println("<td>" + rs.getInt("hotel_id") + "</td>");
-                out.println("<td>" + rs.getString("categorie") + "</td>");
-                out.println("<td>" + rs.getString("Adresse") + "</td>");
+                out.println("<td>" + rs.getString("Name") + "</td>");
+                out.println("<td>" + rs.getString("adresse_du_siege_social") + "</td>");
+                out.println("<td>" + rs.getString("nombre_hotels") + "</td>");
+                out.println("<td>" + rs.getString("Emails") + "</td>");
+                out.println("<td>" + rs.getString("Telephone") + "</td>");
                 out.println("</tr>");
             }
             out.println("</table></body></html>");
@@ -163,7 +165,7 @@ if (!anyFilterSelected) {
         }
 
         if (filterChain) {
-            pstmt.setInt(i++, Integer.parseInt(supChain));
+            pstmt.setString(i++, (supChain));
         }
 
         if (filterCat) {
