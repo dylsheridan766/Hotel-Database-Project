@@ -98,12 +98,13 @@ public class Test extends HttpServlet {
     String supVal = request.getParameter("superVal");
     String supChain = request.getParameter("chainVal");
     String supCat = request.getParameter("CatVal");
-    String supCat = request.getParameter("PriceVal");
+    String supPrice = request.getParameter("PriceVal");
 
 
 
-    //string builder to made the sql query
-    StringBuilder sql = new StringBuilder("Select * From Chambres Where 1=0");
+
+    //string builder to made the sql query that joins chambres,hotels and hotel_chains
+    StringBuilder sql = new StringBuilder("Select c.*, hc.Nom_Chaine"+ " From Chambres c " + " Join Hotels h On c.Hotel_ID = h.Hotel_ID " + " Join Hotel_chains hc On h.chain_ID = hc.chain_ID " +" Where 1=0");
 
     //add the other perameters if the box was checked
     if(filterCap){
@@ -114,22 +115,54 @@ public class Test extends HttpServlet {
         sql.append(" Or chambre_id Not In (Select chambre_id from Reservations_et_locations Where start_date < ? And end_date >?)");
     }
 
+    if(filterSup){
+        sql.append(" Or superficie >= ?");
+    }
+
+    if(filterChain){
+        sql.append(" Or chain_id = ?");
+    }
+
+    if(filterCat){
+        sql.append(" Or h.catagorie=?");
+    }
+
+    if(filterPrice){
+        sql.append(" Or prix<= ?");
+    }
+
     try (PreparedStatement pstmt = conn.prepareStatement(sql.toString())) {
         int i = 1;
         //replace the ? with the appropriate data
         if(filterCap){
-            pstmt.setInt(i++, Integer.parseInt(capVal));        }
+            pstmt.setInt(i++, Integer.parseInt(capVal));       
+         }
 
         if(filterDate){
             pstmt.setDate(i++, java.sql.Date.valueOf(eDateVal));
             pstmt.setDate(i++, java.sql.Date.valueOf(sDateVal));
         }
-    
+        
+        if (filterSup) {
+              pstmt.setInt(i++, Integer.parseInt(supVal));
+        }
+
+        if (filterChain) {
+            pstmt.setInt(i++, Integer.parseInt(supChain));
+        }
+
+        if (filterCat) {
+            pstmt.setInt(i++, Integer.parseInt(supCat));
+        }
+        
+        if (filterPrice) {
+             pstmt.setInt(i++, Integer.parseInt(supPrice));
+        }
         try (ResultSet rs = pstmt.executeQuery()) {
             //make the table
             out.println("<html><body>");
             out.println("<h2>Available Hotels</h2>");
-            out.println("<table border='1'><tr><th>ID</th><th>Hotel_id</th><th>Numéro de chmabre</th><th>Prix</th><th>Commodites</th><th>Capacite</th><th>Vue</th><th>Lit Extra possible?</th><th>Superficie</th><th>État</th></tr>");
+            out.println("<table border='1'><tr><th>Chambre_ID</th><th>Chaîne</th><th>Hotel_id</th><th>Numéro de chmabre</th><th>Prix</th><th>Commodites</th><th>Capacite</th><th>Vue</th><th>Lit Extra possible?</th><th>Superficie</th><th>État</th></tr>");
             
             //loop throught the database
 
@@ -139,6 +172,7 @@ public class Test extends HttpServlet {
                 out.println("<tr>");
 
                 out.println("<td>" + rs.getInt("Chambre_id") + "</td>");
+                out.println("<td>" + rs.getString("Nom_Chaine") + "</td>");
                 out.println("<td>" + rs.getInt("Hotel_ID") + "</td>");
                 out.println("<td>" + rs.getInt("Room_number") + "</td>");
                 out.println("<td>$" + rs.getInt("Prix") + "</td>");
@@ -156,7 +190,7 @@ public class Test extends HttpServlet {
                 out.println("</tr>");
             }
             if (!found) {
-                out.println("<tr><td colspan='3'>Aucun hôtel ne répond à ces exigences.</td></tr>");
+                out.println("<tr><td colspan='11'>Aucun hôtel ne répond à ces exigences.</td></tr>");
             }
             out.println("</table></body></html>");
         }
