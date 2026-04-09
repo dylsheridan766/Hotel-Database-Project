@@ -209,9 +209,7 @@ if (!anyFilterSelected) {
             out.println("</tr>");
                 
             }
-           
 
-          
 
             if (!found) {
                 out.println("<tr><td colspan='11'>Aucun hôtel ne répond à ces exigences.</td></tr>");
