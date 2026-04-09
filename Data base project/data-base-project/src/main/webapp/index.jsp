@@ -50,7 +50,7 @@
                 Client ID: <input type="number" name="clID" placeholder="e.x. 54">
             </div>
             <div>
-                Name: <input type="text" name="name" placeholder="e.x. John Doe">
+                Name: <input type="text" name="name" placeholder="e.x. Jane Doe">
             </div>
             <div>
                 Address: <input type="text" name="address" placeholder="e.x. 613 park avenue">
