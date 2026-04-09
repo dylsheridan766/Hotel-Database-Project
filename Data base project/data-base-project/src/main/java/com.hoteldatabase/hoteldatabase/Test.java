@@ -104,7 +104,7 @@ public class Test extends HttpServlet {
 
 
     //string builder to made the sql query that joins chambres,hotels and hotel_chains
-    StringBuilder sql = new StringBuilder("Select c.*, hc.Nom_Chaine"+ " From Chambres c " + " Join Hotels h On c.Hotel_ID = h.Hotel_ID " + " Join Hotel_chains hc On h.chain_ID = hc.chain_ID " +" Where 1=0");
+    StringBuilder sql = new StringBuilder("Select c.*, hc.Name"+ " From Chambres c " + " Join Hotels h On c.Hotel_ID = h.Hotel_ID " + " Join Hotel_chains hc On h.chain_ID = hc.chain_ID " +" Where 1=0");
 
     //add the other perameters if the box was checked
     if(filterCap){
@@ -172,7 +172,7 @@ public class Test extends HttpServlet {
                 out.println("<tr>");
 
                 out.println("<td>" + rs.getInt("Chambre_id") + "</td>");
-                out.println("<td>" + rs.getString("Nom_Chaine") + "</td>");
+                out.println("<td>" + rs.getString("Name") + "</td>");
                 out.println("<td>" + rs.getInt("Hotel_ID") + "</td>");
                 out.println("<td>" + rs.getInt("Room_number") + "</td>");
                 out.println("<td>$" + rs.getInt("Prix") + "</td>");
