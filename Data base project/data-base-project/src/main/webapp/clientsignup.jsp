@@ -3,9 +3,6 @@
 
         <form>
             <div>
-                Client ID: <input type="number" name="clID" placeholder="e.x. 54">
-            </div>
-            <div>
                 Name: <input type="text" name="name" placeholder="e.x. Jane Doe">
             </div>
             <div>
