@@ -119,7 +119,7 @@ if (!anyFilterSelected) {
 
 
     //string builder to made the sql query that joins chambres,hotels and hotel_chains
-    StringBuilder sql = new StringBuilder("Select c.*, hc.Name "+ " From Chambres c " + " Join Hotels h On c.Hotel_ID = h.Hotel_ID " + " Join Hotel_chains hc On h.chain_ID = hc.chain_ID " +" Where 1=1");
+    StringBuilder sql = new StringBuilder("Select c.*, hc.Name, h.adresse "+ " From Chambres c " + " Join Hotels h On c.Hotel_ID = h.Hotel_ID " + " Join Hotel_chains hc On h.chain_ID = hc.chain_ID " +" Where 1=1");
 
     //add the other perameters if the box was checked
     if(filterCap){
@@ -179,7 +179,7 @@ if (!anyFilterSelected) {
             //make the table
             out.println("<html><body>");
             out.println("<h2>Available Hotels</h2>");
-            out.println("<table border='1'><tr><th>Chambre_ID</th><th>Chaîne</th><th>Hotel_id</th><th>Numéro de chmabre</th><th>Prix</th><th>Commodites</th><th>Capacite</th><th>Vue</th><th>Lit Extra possible?</th><th>Superficie</th><th>État</th></tr>");
+            out.println("<table border='1'><tr><th>Chambre_ID</th><th>Chaîne</th><th>Hotel Addresse</th><th>Numéro de chmabre</th><th>Prix</th><th>Commodites</th><th>Capacite</th><th>Vue</th><th>Lit Extra possible?</th><th>Superficie</th><th>État</th></tr>");
             
             //loop throught the database
 
@@ -190,7 +190,7 @@ if (!anyFilterSelected) {
 
                 out.println("<td>" + rs.getInt("Chambre_id") + "</td>");
                 out.println("<td>" + rs.getString("Name") + "</td>");
-                out.println("<td>" + rs.getInt("Hotel_ID") + "</td>");
+                out.println("<td>" + rs.getString("adresse") + "</td>");
                 out.println("<td>" + rs.getInt("Room_number") + "</td>");
                 out.println("<td>$" + rs.getInt("Prix") + "</td>");
 
