@@ -1,4 +1,9 @@
 <html>
+<style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+    }
+  </style>
  <h3>Client Sign Up</h3>
 
         <form>
