@@ -85,21 +85,33 @@ public class Test extends HttpServlet {
     //check the checkboxes
     boolean filterDate = request.getParameter("useDate") != null;
     boolean filterCap = request.getParameter("useCap") != null;
+    boolean filterSup = request.getParameter("useSup") != null;
+    boolean filterChain = request.getParameter("useChain") != null;
+    boolean filterCat = request.getParameter("useCat") != null;
+    boolean filterPrice = request.getParameter("usePrice") != null;
+
+
     //check the input box
     String sDateVal = request.getParameter("sDateVal");
     String eDateVal = request.getParameter("eDateVal");
     String capVal = request.getParameter("capVal");
+    String supVal = request.getParameter("superVal");
+    String supChain = request.getParameter("chainVal");
+    String supCat = request.getParameter("CatVal");
+    String supCat = request.getParameter("PriceVal");
+
+
 
     //string builder to made the sql query
-    StringBuilder sql = new StringBuilder("Select * From Chambres Where 1=1");
+    StringBuilder sql = new StringBuilder("Select * From Chambres Where 1=0");
 
     //add the other perameters if the box was checked
     if(filterCap){
-        sql.append(" And Capacite >=?");
+        sql.append(" Or Capacite >=?");
     }
 
     if(filterDate){
-        sql.append(" And chambre_id Not In (Select chambre_id from Reservations_et_locations Where start_date < ? And end_date >?)");
+        sql.append(" Or chambre_id Not In (Select chambre_id from Reservations_et_locations Where start_date < ? And end_date >?)");
     }
 
     try (PreparedStatement pstmt = conn.prepareStatement(sql.toString())) {
