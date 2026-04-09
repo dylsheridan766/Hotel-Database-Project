@@ -12,29 +12,29 @@
     <input type="hidden" name="action" value="search">
 
     <div>
-        <input type="checkbox" name="useDate" value="true"> Filtrer par Date: 
+        <input type="checkbox" name="useDate" value="true"> Filter by Date:
        Date de départ: <input type="text" name="sDateVal" placeholder="format YYYY/MM/DD">
        Date de finisement: <input type="text" name="eDateVal" placeholder="format YYYY/MM/DD">
     </div>
 
     <div>
-        <input type="checkbox" name="useCap" value="true"> Filtrer par Capacité: 
+        <input type="checkbox" name="useCap" value="true"> Filter by Capacity:
         <input type="number" name="capVal" placeholder="e.x. 5">
     </div>
     <div>
-        <input type="checkbox" name="useSup" value="true"> Filtrer par Superficie:
+        <input type="checkbox" name="useSup" value="true"> Filter by Floor Space:
         <input type="number" name="superVal" placeholder="e.x. 350">
     </div>
     <div>
-         <input type="checkbox" name="useChain" value="true"> Filtrer par Chaîne:
+         <input type="checkbox" name="useChain" value="true"> Filter by Chain:
          <input type="text" name="chainVal" placeholder="e.x. MGM Resorts">
     </div>
     <div>
-         <input type="checkbox" name="useCat" value="true"> Filtrer par Catégorie:
+         <input type="checkbox" name="useCat" value="true"> Filter by Catergory (Stars):
          <input type="number" name="CatVal" placeholder="e.x. 4">
     </div>
     <div>
-         <input type="checkbox" name="usePrice" value="true"> Filtrer par Prix:
+         <input type="checkbox" name="usePrice" value="true"> Filter by Price:
          <input type="number" name="PriceVal" placeholder="e.x. 400">
     </div>
 
