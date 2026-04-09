@@ -86,17 +86,63 @@ public class Test extends HttpServlet {
     boolean filterDate = request.getParameter("useDate") != null;
     boolean filterCap = request.getParameter("useCap") != null;
     //check the input box
-    String DateVal = request.getParameter("dateVal");
+    String sDateVal = request.getParameter("sDateVal");
+    String eDateVal = request.getParameter("eDateVal");
     String capVal = request.getParameter("capVal");
 
     //string builder to made the sql query
     StringBuilder sql = new StringBuilder("Select * From Chambres Where 1=1");
 
     //add the other perameters if the box was checked
-    if(filterDate){
-        sql.append("And chambre_id Not In (Select chambre_id from Reservations_et_locations Where start_date < ? And end_date >?)");
+    if(filterCap){
+        sql.append(" And Capacite >=?");
     }
+
+    if(filterDate){
+        sql.append(" And chambre_id Not In (Select chambre_id from Reservations_et_locations Where start_date < ? And end_date >?)");
+    }
+
+    try (PreparedStatement pstmt = conn.prepareStatement(sql.toString())) {
+        int i = 1;
+        //replace the ? with the appropriate data
+        if(filterCap){
+            pstmt.setInt(i++, Integer.parseInt(capVal));        }
+
+        if(filterDate){
+            pstmt.setDate(i++, java.sql.Date.valueOf(eDateVal));
+            pstmt.setDate(i++, java.sql.Date.valueOf(sDateVal));
+        }
     
-    
+        try (ResultSet rs = pstmt.executeQuery()) {
+            //make the table
+            out.println("<html><body>");
+            out.println("<h2>Available Hotels</h2>");
+            out.println("<table border='1'><tr><th>ID</th><th>Hotel_id</th><th>Numéro de chmabre</th><th>Prix</th><th>Commodites</th><th>Capacite</th><th>Vue</th><th>Lit Extra possible?</th><th>Superficie</th><th>État</th></tr>");
+            
+            //loop throught the database
+
+            boolean found = false;
+            while (rs.next()) {
+                found = true;
+                out.println("<tr>");
+                out.println("<td>" + rs.getInt("hotel_id") + "</td>");
+                out.println("<td>" + rs.getString("room_number") + "</td>");
+                out.println("<td>" + rs.getString("Prix") + "</td>");
+                out.println("<td>" + rs.getString("Commodites") + "</td>");
+                out.println("<td>" + rs.getString("Capacite") + "</td>");
+                out.println("<td>" + rs.getString("Vue") + "</td>");
+                out.println("<td>" + rs.getString("lit_extra") + "</td>");
+                out.println("<td>" + rs.getString("Superficie") + "</td>");
+                 out.println("<td>" + rs.getString("etat") + "</td>");
+                out.println("</tr>");
+            }
+            if (!found) {
+                out.println("<tr><td colspan='3'>Aucun hôtel ne répond à ces exigences.</td></tr>");
+            }
+            out.println("</table></body></html>");
+        }
+    } catch (IllegalArgumentException e) {
+        out.println("<p style='color:red;'>Error: veuillez entrer une date valid.</p>");
+    }
     }
 }
