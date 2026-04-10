@@ -56,6 +56,10 @@
           <form action="location.jsp" method="GET">
                 <button type="submit">Louer</button>
         </form>
+        <h3>Modifier le DB</h3>
+          <form action="modify.jsp" method="GET">
+                <button type="submit">Adjuster</button>
+        </form>
 
 
 </body>
