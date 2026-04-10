@@ -58,6 +58,8 @@ public class Test extends HttpServlet {
                     case "resappend":
                     createReservation(request, conn, out);
                     break;
+                    case "locappend":
+                    createLocation(request, conn, out);
                     default:
                         out.println("Unknown action: " + action);
                 }
@@ -260,23 +262,71 @@ if (!anyFilterSelected) {
     "(hotel_id, client_id, client_nas, chambre_id, Room_Number, type, Reservation_Date, Start_Date, End_Date) " +
     "SELECT c.Hotel_ID, cl.client_id, cl.Nas, c.Chambre_ID, c.Room_number, 'Reservation', CURRENT_DATE, ?, ? " +
     "FROM Chambres c, Clients cl " +
-    "WHERE c.Chambre_ID = ? AND cl.client_email = ?");
+    "WHERE c.Chambre_ID = ? AND cl.client_email = ? " +
+    "AND NOT EXISTS (" +
+    "    SELECT 1 FROM Reservations_et_locations r " +
+    "    WHERE r.chambre_id = c.Chambre_ID " +
+    "    AND r.Start_Date < ? " +  
+    "    AND r.End_Date > ?" +     
+    ")"
+);
          try (PreparedStatement pstmt = conn.prepareStatement(sql.toString())) {
             pstmt.setDate(1, java.sql.Date.valueOf((sdate)));            
             pstmt.setDate(2, java.sql.Date.valueOf((edate)));
             pstmt.setInt(3, Integer.parseInt((rID)));
             pstmt.setString(4, cEmail);
+            pstmt.setDate(5, java.sql.Date.valueOf((edate)));
+            pstmt.setDate(6, java.sql.Date.valueOf((sdate)));
             int rowsInserted = pstmt.executeUpdate();
-
-            if (rowsInserted > 0) {
+            
+    if (rowsInserted > 0) {
         out.println("<h3>Réservation enregistrée avec succès</h3>");
+        conn.commit();
+    } else {
+        out.println("<h3>La réservation a échoué : La chambre est déjà réservée pour ces dates ou les infos sont invalides.</h3>");
     }
+         
         } catch (Exception e) {
             out.println("<h3>Error dans la réservation: " + e.getMessage() + "</h3>");
 }       
-
-
-
     }
+     private void createLocation(HttpServletRequest request, Connection conn, PrintWriter out) throws SQLException {
+         String rID = request.getParameter("rID");
+         String cEmail = request.getParameter("cEM");
+         String edate = request.getParameter("edate");
+         String empID = request.getParameter("empID");
 
+         StringBuilder sql = new StringBuilder(
+        "INSERT INTO Reservations_et_locations " + 
+        "(hotel_id, client_id, client_nas, chambre_id, Employe_ID, Room_Number, type, Reservation_Date, Start_Date, End_Date) " +
+        "SELECT c.Hotel_ID, cl.client_id, cl.Nas, c.Chambre_ID, ?, c.Room_number, 'Location', CURRENT_DATE, CURRENT_DATE, ? " +
+        "FROM Chambres c, Clients cl " +
+        "WHERE c.Chambre_ID = ? AND cl.client_email = ? " +
+        "AND NOT EXISTS (" +
+        "    SELECT 1 FROM Reservations_et_locations r " +
+        "    WHERE r.chambre_id = c.Chambre_ID " +
+        "    AND r.Start_Date < ? " +  
+        "    AND r.End_Date > CURRENT_DATE" + 
+        ")"
+         );
+
+             try (PreparedStatement pstmt = conn.prepareStatement(sql.toString())) {
+                pstmt.setInt(1, Integer.parseInt(empID)); 
+                pstmt.setDate(2, java.sql.Date.valueOf((edate)));                    
+                pstmt.setInt(3, Integer.parseInt(rID));  
+                pstmt.setString(4, cEmail);
+                pstmt.setDate(5, java.sql.Date.valueOf((edate)));
+                int rowsInserted = pstmt.executeUpdate();
+                
+                if (rowsInserted > 0) {
+        out.println("<h3>Location enregistrée avec succès</h3>");
+        conn.commit();
+    } else {
+        out.println("<h3>La location a échoué : La chambre est déjà réservée pour ces dates ou les infos sont invalides.</h3>");
+    }
+         
+        } catch (Exception e) {
+            out.println("<h3>Error dans la Location: " + e.getMessage() + "</h3>");
+}       
+     }
 }
