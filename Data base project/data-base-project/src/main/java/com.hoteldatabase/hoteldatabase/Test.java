@@ -412,13 +412,15 @@ public class Test extends HttpServlet {
         out.println("<table>");
 
         if (tableName.equals("Hotels")) {
-            out.println("<tr><th>ID</th><th>Catégorie</th><th>Adresse</th><th>ID Manager</th><th>Emails</th><th>Téléphone</th><th>Actions</th></tr>");
+            out.println("<tr><th>ID</th><th>Chain ID</th><th>Catégorie</th><th>Adresse</th><th>ID Manager</th><th>Emails</th><th>Téléphone</th><th>Actions</th></tr>");
             while (rs.next()) {
                 int id = rs.getInt("Hotel_ID");
-                out.println("<tr><td>" + id + "</td><td>" + rs.getInt("categorie") + " ★</td><td>" + rs.getString("adresse") + "</td>");
+                out.println("<tr><td>" + id + "</td>");
+                out.println("<td>" + rs.getInt("chain_id") + "</td>"); 
+                out.println("<td>" + rs.getInt("categorie") + " ★</td><td>" + rs.getString("adresse") + "</td>");
                 out.println("<td>" + rs.getInt("Manager_id") + "</td><td>" + rs.getString("Emails") + "</td><td>" + rs.getString("Telephone") + "</td>");
                 out.println("<td>" + getActionLinks(tableName, id) + "</td></tr>");
-            }
+    }
         } 
         else if (tableName.equals("Chambres")) {
             out.println("<tr><th>ID</th><th>Hôtel</th><th>No.</th><th>Prix</th><th>Capacité</th><th>Commodités</th><th>Vue</th><th>Lit Extra</th><th>Superficie</th><th>État</th><th>Actions</th></tr>");
@@ -432,12 +434,15 @@ public class Test extends HttpServlet {
             }
         }
         else if (tableName.equals("Employes")) {
-            out.println("<tr><th>ID</th><th>Nom Complet</th><th>Adresse</th><th>Rôle</th><th>ID Hôtel</th><th>Actions</th></tr>");
-            while (rs.next()) {
-                int id = rs.getInt("Employe_ID");
-                out.println("<tr><td>" + id + "</td><td>" + rs.getString("Nom_complet") + "</td><td>" + rs.getString("Addresse") + "</td>");
-                out.println("<td>" + rs.getString("Role") + "</td><td>" + rs.getInt("Hotel_ID") + "</td>");
-                out.println("<td>" + getActionLinks(tableName, id) + "</td></tr>");
+                out.println("<tr><th>ID</th><th>NAS</th><th>Nom Complet</th><th>Adresse</th><th>Rôle</th><th>ID Hôtel</th><th>Actions</th></tr>");            while (rs.next()) {
+                while (rs.next()) {
+                    int id = rs.getInt("Employe_ID");
+                    out.println("<tr><td>" + id + "</td>");
+                    out.println("<td>" + rs.getString("Nas") + "</td>"); 
+                    out.println("<td>" + rs.getString("Nom_complet") + "</td><td>" + rs.getString("Addresse") + "</td>");
+                    out.println("<td>" + rs.getString("Role") + "</td><td>" + rs.getInt("Hotel_ID") + "</td>");
+                    out.println("<td>" + getActionLinks(tableName, id) + "</td></tr>");
+    }
             }
         }
         else if (tableName.equals("Clients")) {
@@ -639,7 +644,11 @@ private void roombyzone(Connection conn, PrintWriter out) throws SQLException {
                 out.println("<td>" + rs.getString("count") + "</td>");
                 out.println("</tr>");
             }
+            out.println("</table><br>");
+            out.println("<a href='index.jsp'><button type='button'>Retour à l'accueil</button></a>");
+            out.println("</body></html>");
             out.println("</table></body></html>");
+
         }
     }
     private void capbyhotel(Connection conn, PrintWriter out) throws SQLException {
@@ -670,6 +679,7 @@ private void roombyzone(Connection conn, PrintWriter out) throws SQLException {
         out.println("<input type='hidden' name='tableName' value='" + tableName + "'>");
 
         if (tableName.equals("Hotels")) {
+        out.println("ID de la Chaîne (Requis) : <input type='number' name='chainID' required><br>");
         out.println("Catégorie : <input type='number' name='cat' placeholder='Ex: 5'> étoiles<br>");
         out.println("Adresse : <input type='text' name='addr'><br>");
         out.println("ID Manager : <input type='number' name='manID'><br>");
@@ -689,6 +699,7 @@ private void roombyzone(Connection conn, PrintWriter out) throws SQLException {
     }
     else if (tableName.equals("Employes")) {
         out.println("Nom complet : <input type='text' name='nom'><br>");
+        out.println("NAS : <input type='text' name='nas' required><br>");
         out.println("Adresse : <input type='text' name='addr'><br>");
         out.println("Rôle : <input type='text' name='role'><br>");
         out.println("ID Hôtel : <input type='number' name='hID'><br>");
@@ -710,18 +721,19 @@ private void roombyzone(Connection conn, PrintWriter out) throws SQLException {
         StringBuilder sql = new StringBuilder("INSERT INTO " + tableName + " ");
         //add the info for the specific table
         if (tableName.equals("Hotels")) {
-        sql.append("(categorie, adresse, Manager_id, Emails, Telephone) VALUES (?, ?, ?, ?, ?)");
+        sql.append("(chain_id, categorie, adresse, Manager_id, Emails, Telephone) VALUES (?, ?, ?, ?, ?, ?)");
         } else if (tableName.equals("Chambres")) {
         sql.append("(Hotel_ID, Room_number, Prix, Capacite, Commodites, Vue, Lit_Extra, Superficie, Etat) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
         } else if (tableName.equals("Employes")) {
-        sql.append("(Nom_complet, Addresse, Role, Hotel_ID) VALUES (?, ?, ?, ?)");
-        } else if (tableName.equals("Clients")) {
+        sql.append("(Nom_complet, Nas, Addresse, Role, Hotel_ID) VALUES (?, ?, ?, ?, ?)");      
+      } else if (tableName.equals("Clients")) {
         sql.append("(Nom, client_Email, Addresse, Nas) VALUES (?, ?, ?, ?)");
         }
         //replace the ?s with the relevant data
         try (PreparedStatement pstmt = conn.prepareStatement(sql.toString())) {
         int i = 1;
         if (tableName.equals("Hotels")) {
+            pstmt.setInt(i++, Integer.parseInt(request.getParameter("chainID")));
             pstmt.setInt(i++, Integer.parseInt(request.getParameter("cat")));
             pstmt.setString(i++, request.getParameter("addr"));
             pstmt.setInt(i++, Integer.parseInt(request.getParameter("manID")));
@@ -739,6 +751,7 @@ private void roombyzone(Connection conn, PrintWriter out) throws SQLException {
             pstmt.setString(i++, request.getParameter("etat"));
         } else if (tableName.equals("Employes")) {
             pstmt.setString(i++, request.getParameter("nom"));
+            pstmt.setString(i++, request.getParameter("nas"));
             pstmt.setString(i++, request.getParameter("addr"));
             pstmt.setString(i++, request.getParameter("role"));
             pstmt.setInt(i++, Integer.parseInt(request.getParameter("hID")));
