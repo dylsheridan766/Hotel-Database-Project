@@ -60,8 +60,12 @@ public class Test extends HttpServlet {
                         break;
                     case "locappend":
                     createLocation(request, conn, out);
+                    break;
                     case "viewTable":
                     viewTableGrid(request, conn, out);
+                    break;
+                    case "deleteRecord":
+                    deleteTableRecord(request, conn, out);
                     break;
                     default:
                         out.println("Unknown action: " + action);
@@ -253,6 +257,8 @@ public class Test extends HttpServlet {
             }
         } catch (Exception e) {
             out.println("<h3>Error dans la créaction: " + e.getMessage() + "</h3>");
+            out.println("<button onclick='history.back()'>Go Back</button>");
+
         }
 
     }
@@ -294,6 +300,8 @@ public class Test extends HttpServlet {
 
         } catch (Exception e) {
             out.println("<h3>Error dans la réservation: " + e.getMessage() + "</h3>");
+            out.println("<button onclick='history.back()'>Go Back</button>");
+
         }
     }
 
@@ -334,6 +342,8 @@ public class Test extends HttpServlet {
 
         } catch (Exception e) {
             out.println("<h3>Error dans la Location: " + e.getMessage() + "</h3>");
+            out.println("<button onclick='history.back()'>Go Back</button>");
+
 }       
      }
      private void viewTableGrid(HttpServletRequest request, Connection conn, PrintWriter out) throws SQLException {
@@ -347,7 +357,7 @@ public class Test extends HttpServlet {
         out.println("<html><body><h2>Data pour: " + tableName + "</h2>");
 
         out.println("<a href='testdb?action=showAddForm&tableName=" + tableName + "'><button>+ Add New " + tableName + "</button></a><br><br>");
-        String sql = "SELECT * FROM " + tableName;
+        String sql = "Select * From " + tableName;
         
         try (PreparedStatement pstmt = conn.prepareStatement(sql.toString());
             ResultSet rs = pstmt.executeQuery()) {
@@ -408,8 +418,40 @@ public class Test extends HttpServlet {
             }
             }
 
+    private void deleteTableRecord(HttpServletRequest request, Connection conn, PrintWriter out) throws SQLException {
+        String tableName = request.getParameter("tableName");
+        String ID = request.getParameter("id");
         
+        String tableCol="";
+        //find the id of the selected row
+        if (tableName.equals("Hotels")) {
+            tableCol = "Hotel_ID";}
+        else if (tableName.equals("Chambres")){
+             tableCol = "Chambre_ID";}
+        else if (tableName.equals("Employes")){
+             tableCol = "Employe_ID";}
+        else if (tableName.equals("Clients")){
+             tableCol = "client_id";}
 
-     }
+        String sql = "Delete From " + tableName + "Where" + tableCol + "=?";
+//use the id to find which dataset to delete 
+        try (PreparedStatement pstmt = conn.prepareStatement(sql.toString())) {
+            pstmt.setInt(1, Integer.parseInt(ID));
+            int rowsInserted = pstmt.executeUpdate();
+             if (rowsInserted > 0) {
+                out.println("<h3>Suppression réussie!</h3>");
+                conn.commit();
+            } else {
+                out.println("<h3>La suppression a échoué.</h3>");
+            }
+        out.println("<a href='testdb?action=viewTable&tableName=" + tableName + "'><button>Return to Grid</button></a>");
+        out.println("</body></html>");
+        }catch (Exception e) {
+            out.println("<h3>Error dans la Location: " + e.getMessage() + "</h3>");
+            out.println("<button onclick='history.back()'>Go Back</button>");
+    }
+}
+
+}
     
 
