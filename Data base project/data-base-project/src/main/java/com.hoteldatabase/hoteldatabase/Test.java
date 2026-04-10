@@ -238,7 +238,7 @@ if (!anyFilterSelected) {
             pstmt.setString(1, cName);
             pstmt.setString(2, cAddress);
             pstmt.setString(3, cEmail);
-            pstmt.setString(4, cNAS);
+            pstmt.setInt(4, Integer.parseInt(cNAS));
             int rowsInserted = pstmt.executeUpdate();
 
             if (rowsInserted > 0) {
@@ -255,7 +255,12 @@ if (!anyFilterSelected) {
          String edate = request.getParameter("edate");
          String sdate = request.getParameter("sdate");
         
-        StringBuilder sql = new StringBuilder("INSERT INTO Reservations_et_locations " + "(hotel_id, client_id, client_nas, chambre_id, type, Reservation_Date, Start_Date, End_Date) " +"SELECT c.Hotel_ID, cl.client_id, cl.Nas, c.Chambre_ID, 'Reservation', CURRENT_DATE, ?, ? " +"FROM Chambres c, Clients cl " +"WHERE c.Chambre_ID = ? AND cl.client_Email = ?");
+       StringBuilder sql = new StringBuilder(
+    "INSERT INTO Reservations_et_locations " + 
+    "(hotel_id, client_id, client_nas, chambre_id, Room_Number, type, Reservation_Date, Start_Date, End_Date) " +
+    "SELECT c.Hotel_ID, cl.client_id, cl.Nas, c.Chambre_ID, c.Room_number, 'Reservation', CURRENT_DATE, ?, ? " +
+    "FROM Chambres c, Clients cl " +
+    "WHERE c.Chambre_ID = ? AND cl.client_email = ?");
          try (PreparedStatement pstmt = conn.prepareStatement(sql.toString())) {
             pstmt.setDate(1, java.sql.Date.valueOf((sdate)));            
             pstmt.setDate(2, java.sql.Date.valueOf((edate)));
