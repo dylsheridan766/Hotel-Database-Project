@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <html>
 <head>
   <meta charset="UTF-8">
@@ -14,11 +15,20 @@
   <img src="MichelinStar.svg.png" style="height: 40px;">
   Hotel System
 </h2>
-
+    <div style="display: flex; gap: 8px;">
     <form action="testdb" method="GET">
         <input type="hidden" name="action" value="list">
         <button type="submit">View All Chains</button>
     </form>
+    <form action="testdb" method="GET">
+        <input type="hidden" name="action" value="roombyzone">
+        <button type="submit">Rooms by Zone</button>
+    </form>
+    <form action="testdb" method="GET">
+    <input type="hidden" name="action" value="capbyhotel">
+    <button type="submit">Capacity by Hotel</button>
+    </form>
+    </div>
     <h3>Recherche des chambres par critères</h3>
     <form action="testdb" method="GET">
         <input type="hidden" name="action" value="search">
