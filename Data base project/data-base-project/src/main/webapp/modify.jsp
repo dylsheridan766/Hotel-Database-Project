@@ -20,17 +20,17 @@
     <h3 style="margin: 0;color: #B11116;">Modifier le Database</h3>
   </div>
 
-  <p>Select a table to view its records:</p>
+  <p>Choisir un table afin de voir sa contenue</p>
   <form action="testdb" method="GET">
     <input type="hidden" name="action" value="viewTable">
     <div>
-      <input type="radio" name="tableName" value="Hotels" required> Hotels<br>
-      <input type="radio" name="tableName" value="Chambres"> Rooms<br>
-      <input type="radio" name="tableName" value="Employes"> Employees<br>
+      <input type="radio" name="tableName" value="Hotels" required> Hotêls<br>
+      <input type="radio" name="tableName" value="Chambres"> Chambres<br>
+      <input type="radio" name="tableName" value="Employes"> Employés<br>
       <input type="radio" name="tableName" value="Clients"> Clients<br>
     </div>
     <br>
-    <button type="submit">View Data</button>
+    <button type="submit">Voir les Données</button>
   </form>
   <a href="index.jsp" style="text-decoration: none;">
     <button type="button">Retourner</button>
