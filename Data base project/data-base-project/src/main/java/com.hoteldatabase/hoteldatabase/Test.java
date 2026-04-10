@@ -750,7 +750,6 @@ private void roombyzone(Connection conn, PrintWriter out) throws SQLException {
         }
         int rows = pstmt.executeUpdate();
         if (rows > 0) {
-            conn.commit();
             out.println("<html><body><h3>Ajout réussi !</h3>");
             out.println("<a href='testdb?action=viewTable&tableName=" + tableName + "'>Voir la table</a></body></html>");
         }
