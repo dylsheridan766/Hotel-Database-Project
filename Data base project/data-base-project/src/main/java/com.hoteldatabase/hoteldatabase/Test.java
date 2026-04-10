@@ -55,6 +55,9 @@ public class Test extends HttpServlet {
                     case "append":
                     createClient(request, conn, out);
                     break;
+                    case "resappend":
+                    createReservation(request, conn, out);
+                    break;
                     default:
                         out.println("Unknown action: " + action);
                 }
@@ -246,4 +249,29 @@ if (!anyFilterSelected) {
 }       
 
            }
+     private void createReservation(HttpServletRequest request, Connection conn, PrintWriter out) throws SQLException {
+         String rID = request.getParameter("roomID");
+         String cEmail = request.getParameter("cEM");
+         String edate = request.getParameter("edate");
+         String sdate = request.getParameter("sdate");
+        
+        StringBuilder sql = new StringBuilder("INSERT INTO Reservations_et_locations " + "(hotel_id, client_id, client_nas, chambre_id, type, Reservation_Date, Start_Date, End_Date) " +"SELECT c.Hotel_ID, cl.client_id, cl.Nas, c.Chambre_ID, 'Reservation', CURRENT_DATE, ?, ? " +"FROM Chambres c, Clients cl " +"WHERE c.Chambre_ID = ? AND cl.client_Email = ?");
+         try (PreparedStatement pstmt = conn.prepareStatement(sql.toString())) {
+            pstmt.setDate(1, java.sql.Date.valueOf((sdate)));            
+            pstmt.setDate(2, java.sql.Date.valueOf((edate)));
+            pstmt.setInt(3, Integer.parseInt((rID)));
+            pstmt.setString(4, cEmail);
+            int rowsInserted = pstmt.executeUpdate();
+
+            if (rowsInserted > 0) {
+        out.println("<h3>Réservation enregistrée avec succès</h3>");
+    }
+        } catch (Exception e) {
+            out.println("<h3>Error dans la réservation: " + e.getMessage() + "</h3>");
+}       
+
+
+
+    }
+
 }
