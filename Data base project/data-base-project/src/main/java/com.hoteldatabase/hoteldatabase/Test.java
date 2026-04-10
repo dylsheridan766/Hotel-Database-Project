@@ -52,7 +52,9 @@ public class Test extends HttpServlet {
                     case "search":
                         searchRooms(request, conn, out);
                         break;
-                    
+                    case "append":
+                    createClient(request, conn, out);
+                    break;
                     default:
                         out.println("Unknown action: " + action);
                 }
