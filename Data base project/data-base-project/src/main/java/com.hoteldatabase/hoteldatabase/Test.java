@@ -81,6 +81,12 @@ public class Test extends HttpServlet {
                     case "capbyhotel":
                         capbyhotel(conn, out);
                         break;
+                    case "showAddForm":
+                        showAddForm(request, conn, out);
+                        break;
+                    case "insertRecord":
+                        insertRecord(request, conn, out);
+                        break;
                     default:
                         out.println("Unknown action: " + action);
                 }
@@ -263,7 +269,7 @@ public class Test extends HttpServlet {
             pstmt.setString(1, cName);
             pstmt.setString(2, cAddress);
             pstmt.setString(3, cEmail);
-            pstmt.setInt(4, Integer.parseInt(cNAS));
+            pstmt.setString(4, (cNAS));
             int rowsInserted = pstmt.executeUpdate();
 
             if (rowsInserted > 0) {
@@ -654,5 +660,102 @@ private void roombyzone(Connection conn, PrintWriter out) throws SQLException {
             out.println("</table></body></html>");
         }
     }
+    private void showAddForm(HttpServletRequest request, Connection conn, PrintWriter out) {
+        String tableName = request.getParameter("tableName");
 
+        out.println("<html><head><meta charset='UTF-8'></head><body>");
+        out.println("<h2>Ajouter un(e) " + tableName + "</h2>");
+        out.println("<form action='testdb' method='GET' style='line-height: 2;'>");
+        out.println("<input type='hidden' name='action' value='insertRecord'>");
+        out.println("<input type='hidden' name='tableName' value='" + tableName + "'>");
+
+        if (tableName.equals("Hotels")) {
+        out.println("Catégorie : <input type='number' name='cat' placeholder='Ex: 5'> étoiles<br>");
+        out.println("Adresse : <input type='text' name='addr'><br>");
+        out.println("ID Manager : <input type='number' name='manID'><br>");
+        out.println("Emails : <input type='text' name='emails'><br>");
+        out.println("Téléphone : <input type='text' name='phone'><br>");
+    } 
+    else if (tableName.equals("Chambres")) {
+        out.println("ID Hôtel : <input type='number' name='hID'><br>");
+        out.println("Numéro de chambre : <input type='number' name='rNum'><br>");
+        out.println("Prix : <input type='number' name='prix'> $<br>");
+        out.println("Capacité : <input type='number' name='cap'><br>");
+        out.println("Commodités : <input type='text' name='com'><br>");
+        out.println("Vue : <input type='text' name='vue'><br>");
+        out.println("Lit Extra : <select name='extra'><option value='true'>Oui</option><option value='false'>Non</option></select><br>");
+        out.println("Superficie : <input type='number' name='sup'> m²<br>");
+        out.println("État : <input type='text' name='etat' placeholder='Ex: Libre'><br>");
+    }
+    else if (tableName.equals("Employes")) {
+        out.println("Nom complet : <input type='text' name='nom'><br>");
+        out.println("Adresse : <input type='text' name='addr'><br>");
+        out.println("Rôle : <input type='text' name='role'><br>");
+        out.println("ID Hôtel : <input type='number' name='hID'><br>");
+    }
+    else if (tableName.equals("Clients")) {
+        out.println("Nom complet : <input type='text' name='nom'><br>");
+        out.println("Email : <input type='text' name='email'><br>");
+        out.println("Adresse : <input type='text' name='addr'><br>");
+        out.println("NAS (SIN) : <input type='text' name='nas'><br>");
+    }
+
+    out.println("<br><button type='submit'>Créer l'enregistrement</button>");
+    out.println(" <a href='index.jsp'><button type='button'>Annuler</button></a>");
+    out.println("</form></body></html>");
+    }
+
+    private void insertRecord(HttpServletRequest request, Connection conn, PrintWriter out) throws SQLException {
+        String tableName = request.getParameter("tableName");
+        StringBuilder sql = new StringBuilder("INSERT INTO " + tableName + " ");
+        //add the info for the specific table
+        if (tableName.equals("Hotels")) {
+        sql.append("(categorie, adresse, Manager_id, Emails, Telephone) VALUES (?, ?, ?, ?, ?)");
+        } else if (tableName.equals("Chambres")) {
+        sql.append("(Hotel_ID, Room_number, Prix, Capacite, Commodites, Vue, Lit_Extra, Superficie, Etat) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        } else if (tableName.equals("Employes")) {
+        sql.append("(Nom_complet, Addresse, Role, Hotel_ID) VALUES (?, ?, ?, ?)");
+        } else if (tableName.equals("Clients")) {
+        sql.append("(Nom, client_Email, Addresse, Nas) VALUES (?, ?, ?, ?)");
+        }
+        //replace the ?s with the relevant data
+        try (PreparedStatement pstmt = conn.prepareStatement(sql.toString())) {
+        int i = 1;
+        if (tableName.equals("Hotels")) {
+            pstmt.setInt(i++, Integer.parseInt(request.getParameter("cat")));
+            pstmt.setString(i++, request.getParameter("addr"));
+            pstmt.setInt(i++, Integer.parseInt(request.getParameter("manID")));
+            pstmt.setString(i++, request.getParameter("emails"));
+            pstmt.setString(i++, request.getParameter("phone"));
+        } else if (tableName.equals("Chambres")) {
+            pstmt.setInt(i++, Integer.parseInt(request.getParameter("hID")));
+            pstmt.setInt(i++, Integer.parseInt(request.getParameter("rNum")));
+            pstmt.setInt(i++, Integer.parseInt(request.getParameter("prix")));
+            pstmt.setInt(i++, Integer.parseInt(request.getParameter("cap")));
+            pstmt.setString(i++, request.getParameter("com"));
+            pstmt.setString(i++, request.getParameter("vue"));
+            pstmt.setBoolean(i++, Boolean.parseBoolean(request.getParameter("extra")));
+            pstmt.setInt(i++, Integer.parseInt(request.getParameter("sup")));
+            pstmt.setString(i++, request.getParameter("etat"));
+        } else if (tableName.equals("Employes")) {
+            pstmt.setString(i++, request.getParameter("nom"));
+            pstmt.setString(i++, request.getParameter("addr"));
+            pstmt.setString(i++, request.getParameter("role"));
+            pstmt.setInt(i++, Integer.parseInt(request.getParameter("hID")));
+        } else if (tableName.equals("Clients")) {
+            pstmt.setString(i++, request.getParameter("nom"));
+            pstmt.setString(i++, request.getParameter("email"));
+            pstmt.setString(i++, request.getParameter("addr"));
+            pstmt.setString(i++, request.getParameter("nas"));
+        }
+        int rows = pstmt.executeUpdate();
+        if (rows > 0) {
+            conn.commit();
+            out.println("<html><body><h3>Ajout réussi !</h3>");
+            out.println("<a href='testdb?action=viewTable&tableName=" + tableName + "'>Voir la table</a></body></html>");
+        }
+    } catch (Exception e) {
+        out.println("Erreur lors de l'ajout : " + e.getMessage());
+    }
+    }
 }
