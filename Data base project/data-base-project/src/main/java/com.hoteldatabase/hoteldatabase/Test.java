@@ -230,7 +230,7 @@ if (!anyFilterSelected) {
         String cEmail = request.getParameter("email");
         String cNAS = request.getParameter("NAS");
 //the initial query
-         StringBuilder sql = new StringBuilder("Insert Into Clients (Nom,Addresse,Email,Nas) Values (?, ?, ?, ?)");
+         StringBuilder sql = new StringBuilder("Insert Into Clients (Nom,Addresse,client_Email,Nas) Values (?, ?, ?, ?)");
         try (PreparedStatement pstmt = conn.prepareStatement(sql.toString())) {
             pstmt.setString(1, cName);
             pstmt.setString(2, cAddress);
