@@ -1,6 +1,7 @@
 <html>
 <head>
   <meta charset="UTF-8">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel&display=swap" rel="stylesheet">
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
@@ -8,11 +9,14 @@
   </style>
 </head>
 <body>
-    <h2>Hotel System</h2>
+    <h2 style="display: flex; align-items: center; gap: 10px; font-family: 'Cinzel', serif; letter-spacing: 4px;">
+          <img src="MichelinStar.svg.png" style="height: 40px;">
+          Hotel System
+        </h2>
 
     <form action="testdb" method="GET">
         <input type="hidden" name="action" value="list">
-        <button type="submit">View All Hotels</button>
+        <button type="submit">View All Chains</button>
     </form>
     <h3>Recherche des chambres par critères</h3>
     <form action="testdb" method="GET">
@@ -44,7 +48,10 @@
         </div>
         <button type="submit">Continuer</button>
     </form>
-          <h3>Devenir un Client!</h3>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <img src="user-icon.png" style="height: 24px;">
+            <h3 style="margin: 0;">Devenir un Client!</h3>
+          </div>
             <form action="clientsignup.jsp" method="GET">
                 <button type="submit">Enregistrer!</button>
             </form>
