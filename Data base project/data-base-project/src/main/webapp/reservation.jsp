@@ -12,7 +12,7 @@
              <div>
                 Client ID: <input type="number" name="clientID" placeholder="e.x. 54">
             </div>
-            <input type="hidden" name="action" value="append">
+            <input type="hidden" name="action" value="resappend">
             <button type="submit">Soumettre</button>
            <button onclick="history.back()">Retourner</button>
 

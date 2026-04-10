@@ -15,7 +15,7 @@
             <div>
                 Employee ID: <input type="number" name="empID" placeholder="e.x. 54">
             </div>
-            <input type="hidden" name="action" value="append">
+            <input type="hidden" name="action" value="location append">
             <button type="submit">Soumettre</button>
            <button onclick="history.back()">Retourner</button>
         </form>
