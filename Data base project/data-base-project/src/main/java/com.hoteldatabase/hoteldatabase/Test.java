@@ -310,7 +310,7 @@ public class Test extends HttpServlet {
     private void createLocation(HttpServletRequest request, Connection conn, PrintWriter out) throws SQLException {
         String rID = request.getParameter("rID");
         String cEmail = request.getParameter("cEM");
-        String edate = request.getParameter("edate");
+        String edate = request.getParameter("endate");
         String empID = request.getParameter("empID");
 
         if (rID == null || cEmail == null || edate == null || edate.isEmpty()) {
