@@ -13,7 +13,7 @@
                 Client Email: <input type="text" name="cEM" placeholder="e.x. shmebulock@gmail.com">
             </div>
             <div>
-                Employee ID: <input type="number" name="empID" placeholder="e.x. 54">
+                Employee ID: <input type="number" name="empID" placeholder="e.x. 54 (optionnel">
             </div>
              <div>
                 End Date: <input type="date" name="endate" placeholder="2026/04/14">
