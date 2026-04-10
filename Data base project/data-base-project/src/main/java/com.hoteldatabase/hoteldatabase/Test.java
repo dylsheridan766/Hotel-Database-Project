@@ -371,7 +371,19 @@ public class Test extends HttpServlet {
         out.println("<html><body><h2>Data pour: " + tableName + "</h2>");
 
         out.println("<a href='testdb?action=showAddForm&tableName=" + tableName + "'><button>+ Add New " + tableName + "</button></a><br><br>");
-        String sql = "Select * From " + tableName;
+        
+        String tableCol="";
+        //find the id of the selected row
+        if (tableName.equals("Hotels")) {
+            tableCol = "Hotel_ID";}
+        else if (tableName.equals("Chambres")){
+             tableCol = "Chambre_ID";}
+        else if (tableName.equals("Employes")){
+             tableCol = "Employe_ID";}
+        else if (tableName.equals("Clients")){
+             tableCol = "client_id";}
+        
+        String sql = "Select * From " + tableName + " Order by "+ tableCol + " Asc";
         
         try (PreparedStatement pstmt = conn.prepareStatement(sql.toString());
             ResultSet rs = pstmt.executeQuery()) {
