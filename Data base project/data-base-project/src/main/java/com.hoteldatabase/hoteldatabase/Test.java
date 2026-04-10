@@ -23,7 +23,9 @@ public class Test extends HttpServlet {
     private Properties prop = new Properties();
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        response.setContentType("text/html");
+    request.setCharacterEncoding("UTF-8");
+    response.setCharacterEncoding("UTF-8");
+    response.setContentType("text/html; charset=UTF-8");
         PrintWriter out = response.getWriter();
 
 
@@ -308,7 +310,7 @@ public class Test extends HttpServlet {
     private void createLocation(HttpServletRequest request, Connection conn, PrintWriter out) throws SQLException {
         String rID = request.getParameter("rID");
         String cEmail = request.getParameter("cEM");
-        String edate = request.getParameter("edate");
+        String edate = request.getParameter("endate");
         String empID = request.getParameter("empID");
 
         if (rID == null || cEmail == null || edate == null || edate.isEmpty()) {
