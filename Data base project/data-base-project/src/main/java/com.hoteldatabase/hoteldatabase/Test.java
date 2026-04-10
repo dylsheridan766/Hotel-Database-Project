@@ -23,7 +23,9 @@ public class Test extends HttpServlet {
     private Properties prop = new Properties();
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        response.setContentType("text/html");
+    request.setCharacterEncoding("UTF-8");
+    response.setCharacterEncoding("UTF-8");
+    response.setContentType("text/html; charset=UTF-8");
         PrintWriter out = response.getWriter();
 
 
