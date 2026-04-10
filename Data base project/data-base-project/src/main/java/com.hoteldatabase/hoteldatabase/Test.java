@@ -667,6 +667,9 @@ private void roombyzone(Connection conn, PrintWriter out) throws SQLException {
                 out.println("</tr>");
             }
             out.println("</table></body></html>");
+            out.println("<a href='index.jsp'><button type='button'>Retour à l'accueil</button></a>");
+            out.println("</body></html>");
+            out.println("</table></body></html>");
         }
     }
     private void showAddForm(HttpServletRequest request, Connection conn, PrintWriter out) {
