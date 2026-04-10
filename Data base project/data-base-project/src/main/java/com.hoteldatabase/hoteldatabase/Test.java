@@ -72,6 +72,9 @@ public class Test extends HttpServlet {
                     case "editRecord":
                     EditForm(request, conn, out);
                     break;
+                    case "updateRecord":
+                    updateRecord(request, conn, out);
+                    break;
                     default:
                         out.println("Unknown action: " + action);
                 }
@@ -372,16 +375,16 @@ public class Test extends HttpServlet {
         return;
     }
 
-    String idCol = "";
+    String tableCol = "";
     if (tableName.equals("Hotels")) {
-            idCol = "Hotel_ID";}
+            tableCol = "Hotel_ID";}
         else if (tableName.equals("Chambres")){
-             idCol = "Chambre_ID";}
+             tableCol = "Chambre_ID";}
         else if (tableName.equals("Employes")){
-             idCol = "Employe_ID";}
+             tableCol = "Employe_ID";}
         else if (tableName.equals("Clients")){
-             idCol = "client_id";}
-    String sql = "SELECT * FROM " + tableName + " ORDER BY " + idCol + " ASC";
+             tableCol = "client_id";}
+    String sql = "SELECT * FROM " + tableName + " ORDER BY " + tableCol + " ASC";
 
     out.println("<html><head><meta charset='UTF-8'>");
     out.println("<style>table { border-collapse: collapse; width: 100%; font-family: sans-serif; } " +
@@ -544,5 +547,69 @@ private void EditForm(HttpServletRequest request, Connection conn, PrintWriter o
         }
     }
 }
-    
+    private void updateRecord(HttpServletRequest request, Connection conn, PrintWriter out) throws SQLException {
+        String tableName = request.getParameter("tableName");
+        String ID = request.getParameter("id");
+        String tableCol="";
+        //find the id of the selected row
+        if (tableName.equals("Hotels")) {
+            tableCol = "Hotel_ID";}
+        else if (tableName.equals("Chambres")){
+             tableCol = "Chambre_ID";}
+        else if (tableName.equals("Employes")){
+             tableCol = "Employe_ID";}
+        else if (tableName.equals("Clients")){
+             tableCol = "client_id";}
+
+        StringBuilder sql = new StringBuilder("UPDATE " + tableName + " SET ");
+        //add the appropreat attributes for the appropriat tabel
+        if (tableName.equals("Hotels")) {
+        sql.append("categorie=?, adresse=?, Manager_id=?, Emails=?, Telephone=?");
+        } else if (tableName.equals("Chambres")) {
+        sql.append("Room_number=?, Prix=?, Capacite=?, Commodites=?, Vue=?, Lit_Extra=?, Superficie=?, Etat=?");
+        } else if (tableName.equals("Employes")) {
+        sql.append("Nom_complet=?, Addresse=?, Role=?, Hotel_ID=?");
+        } else if (tableName.equals("Clients")) {
+        sql.append("Nom=?, client_Email=?, Addresse=?");
+        }
+        sql.append(" WHERE ").append(tableCol).append(" = ?");
+        try (PreparedStatement pstmt = conn.prepareStatement(sql.toString())) {
+        int i = 1;
+        if (tableName.equals("Hotels")) {
+            pstmt.setInt(i++, Integer.parseInt(request.getParameter("cat")));
+            pstmt.setString(i++, request.getParameter("addr"));
+            pstmt.setInt(i++, Integer.parseInt(request.getParameter("manID")));
+            pstmt.setString(i++, request.getParameter("emails"));
+            pstmt.setString(i++, request.getParameter("phone"));
+        } else if (tableName.equals("Chambres")) {
+            pstmt.setInt(i++, Integer.parseInt(request.getParameter("rNum")));
+            pstmt.setInt(i++, Integer.parseInt(request.getParameter("prix")));
+            pstmt.setInt(i++, Integer.parseInt(request.getParameter("cap")));
+            pstmt.setString(i++, request.getParameter("com"));
+            pstmt.setString(i++, request.getParameter("vue"));
+            pstmt.setBoolean(i++, Boolean.parseBoolean(request.getParameter("extra")));
+            pstmt.setInt(i++, Integer.parseInt(request.getParameter("sup")));
+            pstmt.setString(i++, request.getParameter("etat"));
+        } else if (tableName.equals("Employes")) {
+            pstmt.setString(i++, request.getParameter("nom"));
+            pstmt.setString(i++, request.getParameter("addr"));
+            pstmt.setString(i++, request.getParameter("role"));
+            pstmt.setInt(i++, Integer.parseInt(request.getParameter("hID")));
+        } else if (tableName.equals("Clients")) {
+            pstmt.setString(i++, request.getParameter("nom"));
+            pstmt.setString(i++, request.getParameter("email"));
+            pstmt.setString(i++, request.getParameter("addr"));
+        }
+        pstmt.setInt(i, Integer.parseInt(ID));
+
+        int rows = pstmt.executeUpdate();
+        if (rows > 0) {
+            out.println("<html><body><h3>Mise à jour réussie!</h3>");
+            out.println("<a href='index.jsp'>Retour à l'accueil</a></body></html>");
+        }
+    }catch (Exception e) {
+        out.println("Error aves la mise a jour " + tableName + ": " + e.getMessage());
+    }
+}
+
 }
