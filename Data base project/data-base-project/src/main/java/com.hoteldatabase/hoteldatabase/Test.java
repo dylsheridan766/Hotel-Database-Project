@@ -23,9 +23,7 @@ public class Test extends HttpServlet {
     private Properties prop = new Properties();
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-      request.setCharacterEncoding("UTF-8");
-    response.setCharacterEncoding("UTF-8");
-    response.setContentType("text/html; charset=UTF-8");
+        response.setContentType("text/html");
         PrintWriter out = response.getWriter();
 
 
@@ -328,25 +326,32 @@ public class Test extends HttpServlet {
         );
 
         try (PreparedStatement pstmt = conn.prepareStatement(sql.toString())) {
-            pstmt.setInt(1, Integer.parseInt(empID));
-            pstmt.setDate(2, java.sql.Date.valueOf((edate)));
-            pstmt.setInt(3, Integer.parseInt(rID));
-            pstmt.setString(4, cEmail);
-            pstmt.setDate(5, java.sql.Date.valueOf((edate)));
-            int rowsInserted = pstmt.executeUpdate();
+    
+    if (empID == null || empID.trim().isEmpty()) {
+        pstmt.setNull(1, java.sql.Types.INTEGER);
+    } else {
+        pstmt.setInt(1, Integer.parseInt(empID));
+    }
 
-            if (rowsInserted > 0) {
-                out.println("<h3>Location enregistrée avec succès</h3>");
-               
-            } else {
-                out.println("<h3>La location a échoué : La chambre est déjà réservée pour ces dates ou les infos sont invalides.</h3>");
-            }
+    pstmt.setDate(2, java.sql.Date.valueOf(edate));
+    pstmt.setInt(3, Integer.parseInt(rID));
+    pstmt.setString(4, cEmail);
+    pstmt.setDate(5, java.sql.Date.valueOf(edate));
 
-        } catch (Exception e) {
-            out.println("<h3>Error dans la Location: " + e.getMessage() + "</h3>");
-            out.println("<button onclick='history.back()'>Go Back</button>");
+    int rowsInserted = pstmt.executeUpdate();
 
-}       
+    if (rowsInserted > 0) { 
+        out.println("<h3>Location enregistrée avec succès</h3>");
+    } else {
+        out.println("<h3>La location a échoué : La chambre est déjà réservée ou les infos sont invalides.</h3>");
+    }
+        out.println("<br><a href='testdb?action=viewTable&tableName=Chambres'><button>Retourner</button></a>");
+
+} catch (NumberFormatException e) {
+    out.println("<h3>Erreur : Le format du NAS ou de l'ID est invalide.</h3>");
+} catch (Exception e) {
+    out.println("<h3>Error dans la Location: " + e.getMessage() + "</h3>");
+}
      }
      private void viewTableGrid(HttpServletRequest request, Connection conn, PrintWriter out) throws SQLException {
         String tableName = request.getParameter("tableName");
