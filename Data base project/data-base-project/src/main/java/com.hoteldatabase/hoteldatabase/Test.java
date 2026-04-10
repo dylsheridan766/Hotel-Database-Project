@@ -18,7 +18,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 @WebServlet("/testdb")
 public class Test extends HttpServlet {
-    
+
     //whats being passed from html
     private Properties prop = new Properties();
 
@@ -26,11 +26,11 @@ public class Test extends HttpServlet {
         response.setContentType("text/html");
         PrintWriter out = response.getWriter();
 
-    
+
         String action = request.getParameter("action");
         if (action == null) action = "list";
 
-    
+
         try (InputStream input = getServletContext().getResourceAsStream("/WEB-INF/classes/db.properties")) {
             if (input == null) {
                 out.println("Unable to find db.properties");
@@ -40,10 +40,10 @@ public class Test extends HttpServlet {
             Class.forName("org.postgresql.Driver");
 
             try (Connection conn = DriverManager.getConnection(
-                    prop.getProperty("db.url"), 
-                    prop.getProperty("db.user"), 
+                    prop.getProperty("db.url"),
+                    prop.getProperty("db.user"),
                     prop.getProperty("db.password"))) {
-                
+
                 // handle the diffrent actions
                 switch (action) {
                     case "list":
@@ -53,13 +53,15 @@ public class Test extends HttpServlet {
                         searchRooms(request, conn, out);
                         break;
                     case "append":
-                    createClient(request, conn, out);
-                    break;
+                        createClient(request, conn, out);
+                        break;
                     case "resappend":
-                    createReservation(request, conn, out);
-                    break;
+                        createReservation(request, conn, out);
+                        break;
                     case "locappend":
-                    createLocation(request, conn, out);
+                        createLocation(request, conn, out);
+                    case "alter":
+
                     default:
                         out.println("Unknown action: " + action);
                 }
@@ -73,10 +75,10 @@ public class Test extends HttpServlet {
         }
     }
 
-    
+
     private void listChains(Connection conn, PrintWriter out) throws SQLException {
         String sql = "SELECT * FROM Hotel_chains";
-        
+
         try (PreparedStatement pstmt = conn.prepareStatement(sql);
              ResultSet rs = pstmt.executeQuery()) {
 
@@ -95,147 +97,149 @@ public class Test extends HttpServlet {
             out.println("</table></body></html>");
         }
     }
+
     private void searchRooms(HttpServletRequest request, Connection conn, PrintWriter out) throws SQLException {
-    //check the checkboxes
-    boolean filterDate = request.getParameter("useDate") != null;
-    boolean filterCap = request.getParameter("useCap") != null;
-    boolean filterSup = request.getParameter("useSup") != null;
-    boolean filterChain = request.getParameter("useChain") != null;
-    boolean filterCat = request.getParameter("useCat") != null;
-    boolean filterPrice = request.getParameter("usePrice") != null;
+        //check the checkboxes
+        boolean filterDate = request.getParameter("useDate") != null;
+        boolean filterCap = request.getParameter("useCap") != null;
+        boolean filterSup = request.getParameter("useSup") != null;
+        boolean filterChain = request.getParameter("useChain") != null;
+        boolean filterCat = request.getParameter("useCat") != null;
+        boolean filterPrice = request.getParameter("usePrice") != null;
 
-    //make sure at least 1 box is checked
-    boolean anyFilterSelected = filterDate || filterCap || filterSup || filterChain || filterCat || filterPrice;
+        //make sure at least 1 box is checked
+        boolean anyFilterSelected = filterDate || filterCap || filterSup || filterChain || filterCat || filterPrice;
 
-if (!anyFilterSelected) {
-    out.println("<html><body>");
-    out.println("<h3 style='color:red;'>Error: Vous devez selectioner au moins 1 critere</h3>");
-    out.println("<a href='index.jsp'>Retournez</a>");
-    out.println("</body></html>");
-    return; // This stops the rest of the code from running
-}
-    //check the input box
-    String sDateVal = request.getParameter("sDateVal");
-    String eDateVal = request.getParameter("eDateVal");
-    String capVal = request.getParameter("capVal");
-    String supVal = request.getParameter("superVal");
-    String supChain = request.getParameter("chainVal");
-    String supCat = request.getParameter("CatVal");
-    String supPrice = request.getParameter("PriceVal");
-
-    //string builder to made the sql query that joins chambres,hotels and hotel_chains
-    StringBuilder sql = new StringBuilder("Select c.*, hc.Name, h.adresse "+ " From Chambres c " + " Join Hotels h On c.Hotel_ID = h.Hotel_ID " + " Join Hotel_chains hc On h.chain_ID = hc.chain_ID " +" Where 1=1");
-
-    //add the other perameters if the box was checked
-    if(filterCap){
-        sql.append(" And Capacite >=?");
-    }
-
-    if(filterDate){
-        sql.append(" And chambre_id Not In (Select chambre_id from Reservations_et_locations Where start_date < ? And end_date >?)");
-    }
-
-    if(filterSup){
-        sql.append(" And superficie >= ?");
-    }
-
-    if(filterChain){
-        sql.append(" And chain_id = ?");
-    }
-
-    if(filterCat){
-        sql.append(" And h.categorie=?");
-    }
-
-    if(filterPrice){
-        sql.append(" And prix<= ?");
-    }
-
-    try (PreparedStatement pstmt = conn.prepareStatement(sql.toString())) {
-        int i = 1;
-        //replace the ? with the appropriate data
-        if(filterCap){
-            pstmt.setInt(i++, Integer.parseInt(capVal));       
-         }
-
-        if(filterDate){
-            pstmt.setDate(i++, java.sql.Date.valueOf(eDateVal));
-            pstmt.setDate(i++, java.sql.Date.valueOf(sDateVal));
+        if (!anyFilterSelected) {
+            out.println("<html><body>");
+            out.println("<h3 style='color:red;'>Error: Vous devez selectioner au moins 1 critere</h3>");
+            out.println("<a href='index.jsp'>Retournez</a>");
+            out.println("</body></html>");
+            return; // This stops the rest of the code from running
         }
-        
+        //check the input box
+        String sDateVal = request.getParameter("sDateVal");
+        String eDateVal = request.getParameter("eDateVal");
+        String capVal = request.getParameter("capVal");
+        String supVal = request.getParameter("superVal");
+        String supChain = request.getParameter("chainVal");
+        String supCat = request.getParameter("CatVal");
+        String supPrice = request.getParameter("PriceVal");
+
+        //string builder to made the sql query that joins chambres,hotels and hotel_chains
+        StringBuilder sql = new StringBuilder("Select c.*, hc.Name, h.adresse " + " From Chambres c " + " Join Hotels h On c.Hotel_ID = h.Hotel_ID " + " Join Hotel_chains hc On h.chain_ID = hc.chain_ID " + " Where 1=1");
+
+        //add the other perameters if the box was checked
+        if (filterCap) {
+            sql.append(" And Capacite >=?");
+        }
+
+        if (filterDate) {
+            sql.append(" And chambre_id Not In (Select chambre_id from Reservations_et_locations Where start_date < ? And end_date >?)");
+        }
+
         if (filterSup) {
-              pstmt.setInt(i++, Integer.parseInt(supVal));
+            sql.append(" And superficie >= ?");
         }
 
         if (filterChain) {
-            pstmt.setString(i++, (supChain));
+            sql.append(" And chain_id = ?");
         }
 
         if (filterCat) {
-            pstmt.setInt(i++, Integer.parseInt(supCat));
+            sql.append(" And h.categorie=?");
         }
-        
+
         if (filterPrice) {
-             pstmt.setInt(i++, Integer.parseInt(supPrice));
+            sql.append(" And prix<= ?");
         }
-            
-        
-        try (ResultSet rs = pstmt.executeQuery()) {
-            //make the table
-            out.println("<html><body>");
-            out.println("<h2>Available Hotels</h2>");
-            out.println("<table border='1'><tr><th>Chambre_ID</th><th>Chaîne</th><th>Hotel Addresse</th><th>Numéro de chmabre</th><th>Prix</th><th>Commodites</th><th>Capacite</th><th>Vue</th><th>Lit Extra possible?</th><th>Superficie</th><th>État</th></tr>");
-            
-            //loop throught the database
 
-            boolean found = false;
-            while (rs.next()) {
-                found = true;
-                out.println("<tr>");
+        try (PreparedStatement pstmt = conn.prepareStatement(sql.toString())) {
+            int i = 1;
+            //replace the ? with the appropriate data
+            if (filterCap) {
+                pstmt.setInt(i++, Integer.parseInt(capVal));
+            }
 
-                out.println("<td>" + rs.getInt("Chambre_id") + "</td>");
-                out.println("<td>" + rs.getString("Name") + "</td>");
-                out.println("<td>" + rs.getString("adresse") + "</td>");
-                out.println("<td>" + rs.getInt("Room_number") + "</td>");
-                out.println("<td>$" + rs.getInt("Prix") + "</td>");
+            if (filterDate) {
+                pstmt.setDate(i++, java.sql.Date.valueOf(eDateVal));
+                pstmt.setDate(i++, java.sql.Date.valueOf(sDateVal));
+            }
 
-                out.println("<td>" + rs.getString("Commodites") + "</td>");
-                out.println("<td>" + rs.getInt("Capacite") + "</td>");
-                out.println("<td>" + rs.getString("Vue") + "</td>");
-                boolean extraLit = rs.getBoolean("Lit_Extra");
-                out.println("<td>" + (extraLit ? "Yes" : "No") + "</td>");
+            if (filterSup) {
+                pstmt.setInt(i++, Integer.parseInt(supVal));
+            }
 
-                out.println("<td>" + rs.getInt("Superficie") + " m²</td>");
-                out.println("<td>" + rs.getString("Etat") + "</td>");
+            if (filterChain) {
+                pstmt.setString(i++, (supChain));
+            }
 
-             
-            out.println("</tr>");
-                
+            if (filterCat) {
+                pstmt.setInt(i++, Integer.parseInt(supCat));
+            }
+
+            if (filterPrice) {
+                pstmt.setInt(i++, Integer.parseInt(supPrice));
             }
 
 
-            if (!found) {
-                out.println("<tr><td colspan='11'>Aucun hôtel ne répond à ces exigences.</td></tr>");
-            }
-            out.println("</table>");
-            out.println("<br><form action='index.jsp'><button type='submit'>Retourner à la recherche</button></form>");
-            out.println("</body></html>");
+            try (ResultSet rs = pstmt.executeQuery()) {
+                //make the table
+                out.println("<html><body>");
+                out.println("<h2>Available Hotels</h2>");
+                out.println("<table border='1'><tr><th>Chambre_ID</th><th>Chaîne</th><th>Hotel Addresse</th><th>Numéro de chmabre</th><th>Prix</th><th>Commodites</th><th>Capacite</th><th>Vue</th><th>Lit Extra possible?</th><th>Superficie</th><th>État</th></tr>");
 
-          
+                //loop throught the database
+
+                boolean found = false;
+                while (rs.next()) {
+                    found = true;
+                    out.println("<tr>");
+
+                    out.println("<td>" + rs.getInt("Chambre_id") + "</td>");
+                    out.println("<td>" + rs.getString("Name") + "</td>");
+                    out.println("<td>" + rs.getString("adresse") + "</td>");
+                    out.println("<td>" + rs.getInt("Room_number") + "</td>");
+                    out.println("<td>$" + rs.getInt("Prix") + "</td>");
+
+                    out.println("<td>" + rs.getString("Commodites") + "</td>");
+                    out.println("<td>" + rs.getInt("Capacite") + "</td>");
+                    out.println("<td>" + rs.getString("Vue") + "</td>");
+                    boolean extraLit = rs.getBoolean("Lit_Extra");
+                    out.println("<td>" + (extraLit ? "Yes" : "No") + "</td>");
+
+                    out.println("<td>" + rs.getInt("Superficie") + " m²</td>");
+                    out.println("<td>" + rs.getString("Etat") + "</td>");
+
+
+                    out.println("</tr>");
+
+                }
+
+
+                if (!found) {
+                    out.println("<tr><td colspan='11'>Aucun hôtel ne répond à ces exigences.</td></tr>");
+                }
+                out.println("</table>");
+                out.println("<br><form action='index.jsp'><button type='submit'>Retourner à la recherche</button></form>");
+                out.println("</body></html>");
+
+
+            }
+        } catch (IllegalArgumentException e) {
+            out.println("<p style='color:red;'>Error: veuillez entrer une date valid.</p>");
+            out.println("<a href='index.jsp'>Retournez</a>");
         }
-    } catch (IllegalArgumentException e) {
-        out.println("<p style='color:red;'>Error: veuillez entrer une date valid.</p>");
-        out.println("<a href='index.jsp'>Retournez</a>");
     }
-    }
-     private void createClient(HttpServletRequest request, Connection conn, PrintWriter out) throws SQLException {
+
+    private void createClient(HttpServletRequest request, Connection conn, PrintWriter out) throws SQLException {
         //get the inputed data
         String cName = request.getParameter("name");
         String cAddress = request.getParameter("address");
         String cEmail = request.getParameter("email");
         String cNAS = request.getParameter("NAS");
 //the initial query
-         StringBuilder sql = new StringBuilder("Insert Into Clients (Nom,Addresse,client_Email,Nas) Values (?, ?, ?, ?)");
+        StringBuilder sql = new StringBuilder("Insert Into Clients (Nom,Addresse,client_Email,Nas) Values (?, ?, ?, ?)");
         try (PreparedStatement pstmt = conn.prepareStatement(sql.toString())) {
             pstmt.setString(1, cName);
             pstmt.setString(2, cAddress);
@@ -244,89 +248,92 @@ if (!anyFilterSelected) {
             int rowsInserted = pstmt.executeUpdate();
 
             if (rowsInserted > 0) {
-        out.println("<h3>Compte enregistré avec succès</h3>");
-    }
+                out.println("<h3>Compte enregistré avec succès</h3>");
+            }
         } catch (Exception e) {
             out.println("<h3>Error dans la créaction: " + e.getMessage() + "</h3>");
-}       
+        }
 
-           }
-     private void createReservation(HttpServletRequest request, Connection conn, PrintWriter out) throws SQLException {
-         String rID = request.getParameter("roomID");
-         String cEmail = request.getParameter("cEM");
-         String edate = request.getParameter("edate");
-         String sdate = request.getParameter("sdate");
-        
-       StringBuilder sql = new StringBuilder(
-    "INSERT INTO Reservations_et_locations " + 
-    "(hotel_id, client_id, client_nas, chambre_id, Room_Number, type, Reservation_Date, Start_Date, End_Date) " +
-    "SELECT c.Hotel_ID, cl.client_id, cl.Nas, c.Chambre_ID, c.Room_number, 'Reservation', CURRENT_DATE, ?, ? " +
-    "FROM Chambres c, Clients cl " +
-    "WHERE c.Chambre_ID = ? AND cl.client_email = ? " +
-    "AND NOT EXISTS (" +
-    "    SELECT 1 FROM Reservations_et_locations r " +
-    "    WHERE r.chambre_id = c.Chambre_ID " +
-    "    AND r.Start_Date < ? " +  
-    "    AND r.End_Date > ?" +     
-    ")"
-);
-         try (PreparedStatement pstmt = conn.prepareStatement(sql.toString())) {
-            pstmt.setDate(1, java.sql.Date.valueOf((sdate)));            
+    }
+
+    private void createReservation(HttpServletRequest request, Connection conn, PrintWriter out) throws SQLException {
+        String rID = request.getParameter("roomID");
+        String cEmail = request.getParameter("cEM");
+        String edate = request.getParameter("edate");
+        String sdate = request.getParameter("sdate");
+
+        StringBuilder sql = new StringBuilder(
+                "INSERT INTO Reservations_et_locations " +
+                        "(hotel_id, client_id, client_nas, chambre_id, Room_Number, type, Reservation_Date, Start_Date, End_Date) " +
+                        "SELECT c.Hotel_ID, cl.client_id, cl.Nas, c.Chambre_ID, c.Room_number, 'Reservation', CURRENT_DATE, ?, ? " +
+                        "FROM Chambres c, Clients cl " +
+                        "WHERE c.Chambre_ID = ? AND cl.client_email = ? " +
+                        "AND NOT EXISTS (" +
+                        "    SELECT 1 FROM Reservations_et_locations r " +
+                        "    WHERE r.chambre_id = c.Chambre_ID " +
+                        "    AND r.Start_Date < ? " +
+                        "    AND r.End_Date > ?" +
+                        ")"
+        );
+        try (PreparedStatement pstmt = conn.prepareStatement(sql.toString())) {
+            pstmt.setDate(1, java.sql.Date.valueOf((sdate)));
             pstmt.setDate(2, java.sql.Date.valueOf((edate)));
             pstmt.setInt(3, Integer.parseInt((rID)));
             pstmt.setString(4, cEmail);
             pstmt.setDate(5, java.sql.Date.valueOf((edate)));
             pstmt.setDate(6, java.sql.Date.valueOf((sdate)));
             int rowsInserted = pstmt.executeUpdate();
-            
-    if (rowsInserted > 0) {
-        out.println("<h3>Réservation enregistrée avec succès</h3>");
-        conn.commit();
-    } else {
-        out.println("<h3>La réservation a échoué : La chambre est déjà réservée pour ces dates ou les infos sont invalides.</h3>");
-    }
-         
+
+            if (rowsInserted > 0) {
+                out.println("<h3>Réservation enregistrée avec succès</h3>");
+                conn.commit();
+            } else {
+                out.println("<h3>La réservation a échoué : La chambre est déjà réservée pour ces dates ou les infos sont invalides.</h3>");
+            }
+
         } catch (Exception e) {
             out.println("<h3>Error dans la réservation: " + e.getMessage() + "</h3>");
-}       
+        }
     }
-     private void createLocation(HttpServletRequest request, Connection conn, PrintWriter out) throws SQLException {
-         String rID = request.getParameter("rID");
-         String cEmail = request.getParameter("cEM");
-         String edate = request.getParameter("edate");
-         String empID = request.getParameter("empID");
 
-         StringBuilder sql = new StringBuilder(
-        "INSERT INTO Reservations_et_locations " + 
-        "(hotel_id, client_id, client_nas, chambre_id, Employe_ID, Room_Number, type, Reservation_Date, Start_Date, End_Date) " +
-        "SELECT c.Hotel_ID, cl.client_id, cl.Nas, c.Chambre_ID, ?, c.Room_number, 'Location', CURRENT_DATE, CURRENT_DATE, ? " +
-        "FROM Chambres c, Clients cl " +
-        "WHERE c.Chambre_ID = ? AND cl.client_email = ? " +
-        "AND NOT EXISTS (" +
-        "    SELECT 1 FROM Reservations_et_locations r " +
-        "    WHERE r.chambre_id = c.Chambre_ID " +
-        "    AND r.Start_Date < ? " +  
-        "    AND r.End_Date > CURRENT_DATE" + 
-        ")"
-         );
+    private void createLocation(HttpServletRequest request, Connection conn, PrintWriter out) throws SQLException {
+        String rID = request.getParameter("rID");
+        String cEmail = request.getParameter("cEM");
+        String edate = request.getParameter("edate");
+        String empID = request.getParameter("empID");
 
-             try (PreparedStatement pstmt = conn.prepareStatement(sql.toString())) {
-                pstmt.setInt(1, Integer.parseInt(empID)); 
-                pstmt.setDate(2, java.sql.Date.valueOf((edate)));                    
-                pstmt.setInt(3, Integer.parseInt(rID));  
-                pstmt.setString(4, cEmail);
-                pstmt.setDate(5, java.sql.Date.valueOf((edate)));
-                int rowsInserted = pstmt.executeUpdate();
-                
-                if (rowsInserted > 0) {
-        out.println("<h3>Location enregistrée avec succès</h3>");
-        conn.commit();
-    } else {
-        out.println("<h3>La location a échoué : La chambre est déjà réservée pour ces dates ou les infos sont invalides.</h3>");
-    }
-         
+        StringBuilder sql = new StringBuilder(
+                "INSERT INTO Reservations_et_locations " +
+                        "(hotel_id, client_id, client_nas, chambre_id, Employe_ID, Room_Number, type, Reservation_Date, Start_Date, End_Date) " +
+                        "SELECT c.Hotel_ID, cl.client_id, cl.Nas, c.Chambre_ID, ?, c.Room_number, 'Location', CURRENT_DATE, CURRENT_DATE, ? " +
+                        "FROM Chambres c, Clients cl " +
+                        "WHERE c.Chambre_ID = ? AND cl.client_email = ? " +
+                        "AND NOT EXISTS (" +
+                        "    SELECT 1 FROM Reservations_et_locations r " +
+                        "    WHERE r.chambre_id = c.Chambre_ID " +
+                        "    AND r.Start_Date < ? " +
+                        "    AND r.End_Date > CURRENT_DATE" +
+                        ")"
+        );
+
+        try (PreparedStatement pstmt = conn.prepareStatement(sql.toString())) {
+            pstmt.setInt(1, Integer.parseInt(empID));
+            pstmt.setDate(2, java.sql.Date.valueOf((edate)));
+            pstmt.setInt(3, Integer.parseInt(rID));
+            pstmt.setString(4, cEmail);
+            pstmt.setDate(5, java.sql.Date.valueOf((edate)));
+            int rowsInserted = pstmt.executeUpdate();
+
+            if (rowsInserted > 0) {
+                out.println("<h3>Location enregistrée avec succès</h3>");
+                conn.commit();
+            } else {
+                out.println("<h3>La location a échoué : La chambre est déjà réservée pour ces dates ou les infos sont invalides.</h3>");
+            }
+
         } catch (Exception e) {
             out.println("<h3>Error dans la Location: " + e.getMessage() + "</h3>");
-}       
-     }
+        }
+    }
 }
+
