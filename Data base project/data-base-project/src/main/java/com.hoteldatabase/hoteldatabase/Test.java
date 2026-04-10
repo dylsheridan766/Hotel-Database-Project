@@ -311,6 +311,12 @@ public class Test extends HttpServlet {
         String edate = request.getParameter("edate");
         String empID = request.getParameter("empID");
 
+        if (rID == null || cEmail == null || edate == null || edate.isEmpty()) {
+        out.println("<h3 style='color:red;'>Erreur : Données manquantes (ID Chambre, Email, ou Date).</h3>");
+        out.println("<br><a href='index.jsp'><button type='button'>Retourner à l'accueil</button></a>"); 
+           return; 
+    }
+
         StringBuilder sql = new StringBuilder(
                 "INSERT INTO Reservations_et_locations " +
                         "(hotel_id, client_id, client_nas, chambre_id, Employe_ID, Room_Number, type, Reservation_Date, Start_Date, End_Date) " +
@@ -345,8 +351,7 @@ public class Test extends HttpServlet {
     } else {
         out.println("<h3>La location a échoué : La chambre est déjà réservée ou les infos sont invalides.</h3>");
     }
-        out.println("<br><a href='testdb?action=viewTable&tableName=Chambres'><button>Retourner</button></a>");
-
+        out.println("<br><a href='index.jsp'><button type='button'>Retourner à l'accueil</button></a>");
 } catch (NumberFormatException e) {
     out.println("<h3>Erreur : Le format du NAS ou de l'ID est invalide.</h3>");
 } catch (Exception e) {
