@@ -23,7 +23,9 @@ public class Test extends HttpServlet {
     private Properties prop = new Properties();
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        response.setContentType("text/html");
+      request.setCharacterEncoding("UTF-8");
+    response.setCharacterEncoding("UTF-8");
+    response.setContentType("text/html; charset=UTF-8");
         PrintWriter out = response.getWriter();
 
 
@@ -293,7 +295,7 @@ public class Test extends HttpServlet {
 
             if (rowsInserted > 0) {
                 out.println("<h3>Réservation enregistrée avec succès</h3>");
-                conn.commit();
+              
             } else {
                 out.println("<h3>La réservation a échoué : La chambre est déjà réservée pour ces dates ou les infos sont invalides.</h3>");
             }
@@ -335,7 +337,7 @@ public class Test extends HttpServlet {
 
             if (rowsInserted > 0) {
                 out.println("<h3>Location enregistrée avec succès</h3>");
-                conn.commit();
+               
             } else {
                 out.println("<h3>La location a échoué : La chambre est déjà réservée pour ces dates ou les infos sont invalides.</h3>");
             }
@@ -433,14 +435,13 @@ public class Test extends HttpServlet {
         else if (tableName.equals("Clients")){
              tableCol = "client_id";}
 
-        String sql = "Delete From " + tableName + "Where" + tableCol + "=?";
-//use the id to find which dataset to delete 
+        String sql = "Delete From " + tableName + " Where " + tableCol + " = ? ";//use the id to find which dataset to delete 
         try (PreparedStatement pstmt = conn.prepareStatement(sql.toString())) {
             pstmt.setInt(1, Integer.parseInt(ID));
             int rowsInserted = pstmt.executeUpdate();
              if (rowsInserted > 0) {
                 out.println("<h3>Suppression réussie!</h3>");
-                conn.commit();
+               
             } else {
                 out.println("<h3>La suppression a échoué.</h3>");
             }
