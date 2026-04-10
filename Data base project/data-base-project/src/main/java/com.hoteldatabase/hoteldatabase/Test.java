@@ -61,20 +61,26 @@ public class Test extends HttpServlet {
                         createReservation(request, conn, out);
                         break;
                     case "locappend":
-                    createLocation(request, conn, out);
-                    break;
+                        createLocation(request, conn, out);
+                        break;
                     case "viewTable":
-                    viewTableGrid(request, conn, out);
-                    break;
+                        viewTableGrid(request, conn, out);
+                        break;
                     case "deleteRecord":
-                    deleteTableRecord(request, conn, out);
-                    break;
+                        deleteTableRecord(request, conn, out);
+                        break;
                     case "editRecord":
-                    EditForm(request, conn, out);
-                    break;
+                        EditForm(request, conn, out);
+                        break;
                     case "updateRecord":
-                    updateRecord(request, conn, out);
-                    break;
+                        updateRecord(request, conn, out);
+                        break;
+                    case "roombyzone":
+                        roombyzone(conn, out);
+                        break;
+                    case "capbyhotel":
+                        capbyhotel(conn, out);
+                        break;
                     default:
                         out.println("Unknown action: " + action);
                 }
@@ -611,5 +617,42 @@ private void EditForm(HttpServletRequest request, Connection conn, PrintWriter o
         out.println("Error aves la mise a jour " + tableName + ": " + e.getMessage());
     }
 }
+
+private void roombyzone(Connection conn, PrintWriter out) throws SQLException {
+        String sql = "SELECT * FROM num_chambre_par_zone";
+
+        try (PreparedStatement pstmt = conn.prepareStatement(sql);
+             ResultSet rs = pstmt.executeQuery()) {
+
+            out.println("<html><body><h1>Nombre de Hotels par Zone</h1><table border='1'>");
+            out.println("<tr><th>Zone</th><th>Nombre de Chambres</th></tr>");
+
+            while (rs.next()) {
+                out.println("<tr>");
+                out.println("<td>" + rs.getString("Zone") + "</td>");
+                out.println("<td>" + rs.getString("count") + "</td>");
+                out.println("</tr>");
+            }
+            out.println("</table></body></html>");
+        }
+    }
+    private void capbyhotel(Connection conn, PrintWriter out) throws SQLException {
+        String sql = "SELECT * FROM tot_capacity";
+
+        try (PreparedStatement pstmt = conn.prepareStatement(sql);
+             ResultSet rs = pstmt.executeQuery()) {
+
+            out.println("<html><body><h1>Capacité total Hotel</h1><table border='1'>");
+            out.println("<tr><th>Hotel</th><th>Capacité</th></tr>");
+
+            while (rs.next()) {
+                out.println("<tr>");
+                out.println("<td>" + rs.getString("Hotel_id") + "</td>");
+                out.println("<td>" + rs.getString("count") + "</td>");
+                out.println("</tr>");
+            }
+            out.println("</table></body></html>");
+        }
+    }
 
 }
