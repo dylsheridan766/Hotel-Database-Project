@@ -10,7 +10,7 @@
                 Room ID: <input type="number" name="rID" placeholder="e.x. 54">
             </div>
              <div>
-                Client ID: <input type="number" name="cID" placeholder="e.x. 54">
+                Client Email: <input type="text" name="cEM" placeholder="e.x. shmebulock@gmail.com">
             </div>
             <div>
                 Employee ID: <input type="number" name="empID" placeholder="e.x. 54">

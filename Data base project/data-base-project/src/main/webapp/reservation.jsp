@@ -10,7 +10,7 @@
                 Room ID: <input type="number" name="roomID" placeholder="e.x. 54">
             </div>
              <div>
-                Client ID: <input type="number" name="clientID" placeholder="e.x. 54">
+                Client Email: <input type="text" name="cEM" placeholder="e.x. bilbobaggins@gmail.com">
             </div>
             <input type="hidden" name="action" value="resappend">
             <button type="submit">Soumettre</button>
