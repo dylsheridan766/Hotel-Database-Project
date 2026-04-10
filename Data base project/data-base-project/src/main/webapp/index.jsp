@@ -1,18 +1,19 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Hind&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Hind&family=Source+Sans+3&display=swap" rel="stylesheet">
   <style>
     body {
-      font-family: 'Segoe UI', sans-serif;
+    font-family: 'Source Sans 3', sans-serif;
     }
   </style>
 </head>
 <body>
-    <h2 style="display: flex; align-items: center; gap: 10px; font-family: 'Cinzel', serif; letter-spacing: 4px;">
-          <img src="MichelinStar.svg.png" style="height: 40px;">
-          Hotel System
-        </h2>
+    <h2 style="display: flex; align-items: center; gap: 10px; font-family: 'Hind', sans-serif; letter-spacing: 0px; color: #B11116;">
+  <img src="MichelinStar.svg.png" style="height: 40px;">
+  Hotel System
+</h2>
 
     <form action="testdb" method="GET">
         <input type="hidden" name="action" value="list">
