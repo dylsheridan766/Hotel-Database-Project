@@ -50,21 +50,30 @@
         <button type="submit">Continuer</button>
     </form>
           <div style="display: flex; align-items: center; gap: 8px;">
-            <img src="user-icon.png" style="height: 24px;">
+            <img src="1594252-200.png" style="height: 24px;">
             <h3 style="margin: 0;">Devenir un Client!</h3>
           </div>
             <form action="clientsignup.jsp" method="GET">
                 <button type="submit">Enregistrer!</button>
             </form>
-        <h3>Réservations</h3>
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <img src="2192.png" style="height: 24px;">
+          <h3 style="margin: 0;">Réservations</h3>
+        </div>
         <form action="reservation.jsp" method="GET">
                 <button type="submit">Reserver</button>
         </form>
-        <h3>Locations</h3>
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <img src="66901.png" style="height: 24px;">
+          <h3 style="margin: 0;">Locations</h3>
+        </div>
           <form action="location.jsp" method="GET">
                 <button type="submit">Louer</button>
         </form>
-        <h3>Modifier le DB</h3>
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <img src="3082103-200.png" style="height: 24px;">
+          <h3 style="margin: 0;">Modifier le DB</h3>
+        </div>
           <form action="modify.jsp" method="GET">
                 <button type="submit">Adjuster</button>
         </form>
