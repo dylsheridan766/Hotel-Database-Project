@@ -10,7 +10,13 @@
                 Room ID: <input type="number" name="roomID" placeholder="e.x. 54">
             </div>
              <div>
-                Client ID: <input type="number" name="clientID" placeholder="e.x. 54">
+                Client Email: <input type="text" name="cEM" placeholder="e.x. bilbobaggins@gmail.com">
+            </div>
+            <div>
+                Start Date: <input type="date" name="sdate" placeholder="2026/04/09">
+            </div>
+            <div>
+                End Date: <input type="date" name="edate" placeholder="2026/04/14">
             </div>
             <input type="hidden" name="action" value="resappend">
             <button type="submit">Soumettre</button>
