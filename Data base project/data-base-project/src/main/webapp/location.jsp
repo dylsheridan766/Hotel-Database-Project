@@ -15,6 +15,9 @@
             <div>
                 Employee ID: <input type="number" name="empID" placeholder="e.x. 54">
             </div>
+             <div>
+                End Date: <input type="date" name="endate" placeholder="2026/04/14">
+            </div>
             <input type="hidden" name="action" value="locappend">
             <button type="submit">Soumettre</button>
            <button onclick="history.back()">Retourner</button>
