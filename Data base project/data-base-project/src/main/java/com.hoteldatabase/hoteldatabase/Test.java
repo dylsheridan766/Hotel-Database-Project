@@ -69,6 +69,9 @@ public class Test extends HttpServlet {
                     case "deleteRecord":
                     deleteTableRecord(request, conn, out);
                     break;
+                    case "editRecord":
+                    EditForm(request, conn, out);
+                    break;
                     default:
                         out.println("Unknown action: " + action);
                 }
@@ -360,89 +363,88 @@ public class Test extends HttpServlet {
     out.println("<h3>Error dans la Location: " + e.getMessage() + "</h3>");
 }
      }
-     private void viewTableGrid(HttpServletRequest request, Connection conn, PrintWriter out) throws SQLException {
-        String tableName = request.getParameter("tableName");
-        //make sure a valid table was selected
-        if (tableName == null || (!tableName.equals("Hotels") && !tableName.equals("Chambres") && 
-            !tableName.equals("Employes") && !tableName.equals("Clients"))) {
-            out.println("<html><body><h3 style='color:red;'>Table invalide sélectionnée.</h3><button onclick='history.back()'>Retourner</button></body></html>");
-            return;
-        }
-        out.println("<html><body><h2>Data pour: " + tableName + "</h2>");
+    private void viewTableGrid(HttpServletRequest request, Connection conn, PrintWriter out) throws SQLException {
+    String tableName = request.getParameter("tableName");
 
-        out.println("<a href='testdb?action=showAddForm&tableName=" + tableName + "'><button>+ Add New " + tableName + "</button></a><br><br>");
-        
-        String tableCol="";
-        //find the id of the selected row
-        if (tableName.equals("Hotels")) {
-            tableCol = "Hotel_ID";}
+    if (tableName == null || (!tableName.equals("Hotels") && !tableName.equals("Chambres") && 
+        !tableName.equals("Employes") && !tableName.equals("Clients"))) {
+        out.println("<html><body><h3 style='color:red;'>Table invalide.</h3></body></html>");
+        return;
+    }
+
+    String idCol = "";
+    if (tableName.equals("Hotels")) {
+            idCol = "Hotel_ID";}
         else if (tableName.equals("Chambres")){
-             tableCol = "Chambre_ID";}
+             idCol = "Chambre_ID";}
         else if (tableName.equals("Employes")){
-             tableCol = "Employe_ID";}
+             idCol = "Employe_ID";}
         else if (tableName.equals("Clients")){
-             tableCol = "client_id";}
-        
-        String sql = "Select * From " + tableName + " Order by "+ tableCol + " Asc";
-        
-        try (PreparedStatement pstmt = conn.prepareStatement(sql.toString());
-            ResultSet rs = pstmt.executeQuery()) {
-                out.println("<table border='1'>");
-                if (tableName.equals("Hotels")) {
-                out.println("<tr><th>Hotel ID</th><th>Category</th><th>Address</th><th>Actions</th></tr>");
-                while (rs.next()) {
-                    int id = rs.getInt("Hotel_ID");
-                    out.println("<tr>");
-                    out.println("<td>" + id + "</td>");
-                    out.println("<td>" + rs.getString("categorie") + "</td>");
-                    out.println("<td>" + rs.getString("adresse") + "</td>");
-                    out.println("<td><a href='testdb?action=editRecord&tableName=Hotels&id=" + id + "'>Edit</a> | <a href='testdb?action=deleteRecord&tableName=Hotels&id=" + id + "' style='color:red;'>Delete</a></td>");
-                    out.println("</tr>");
-                }
-            }
-                else if (tableName.equals("Chambres")) {
-                out.println("<tr><th>Chambre ID</th><th>Hotel ID</th><th>Room Num</th><th>Price</th><th>Actions</th></tr>");
-                while (rs.next()) {
-                    int id = rs.getInt("Chambre_ID");
-                    out.println("<tr>");
-                    out.println("<td>" + id + "</td>");
-                    out.println("<td>" + rs.getInt("Hotel_ID") + "</td>");
-                    out.println("<td>" + rs.getInt("Room_number") + "</td>");
-                    out.println("<td>$" + rs.getInt("Prix") + "</td>");
-                    out.println("<td><a href='testdb?action=editRecord&tableName=Chambres&id=" + id + "'>Edit</a> | <a href='testdb?action=deleteRecord&tableName=Chambres&id=" + id + "' style='color:red;'>Delete</a></td>");
-                    out.println("</tr>");
-                }
-            }
+             idCol = "client_id";}
+    String sql = "SELECT * FROM " + tableName + " ORDER BY " + idCol + " ASC";
 
-            else if (tableName.equals("Employes")) {
-                out.println("<tr><th>Emp ID</th><th>Name</th><th>Role</th><th>Actions</th></tr>");
-                while (rs.next()) {
-                    int id = rs.getInt("Employe_ID"); 
-                    out.println("<tr>");
-                    out.println("<td>" + id + "</td>");
-                    out.println("<td>" + rs.getString("Nom_complet") + "</td>"); 
-                    out.println("<td>" + rs.getString("Role") + "</td>");
-                    out.println("<td><a href='testdb?action=editRecord&tableName=Employes&id=" + id + "'>Edit</a> | <a href='testdb?action=deleteRecord&tableName=Employes&id=" + id + "' style='color:red;'>Delete</a></td>");
-                    out.println("</tr>");
-                }
+    out.println("<html><head><meta charset='UTF-8'>");
+    out.println("<style>table { border-collapse: collapse; width: 100%; font-family: sans-serif; } " +
+                "th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; } " +
+                "tr:hover {background-color: #f9f9f9;} th { background-color: #f2f2f2; }</style>");
+    out.println("</head><body>");
+    out.println("<h2>Gestion : " + tableName + "</h2>");
+    out.println("<a href='testdb?action=showAddForm&tableName=" + tableName + "'><button>+ Ajouter un(e) " + tableName + "</button></a><br><br>");
+
+    try (PreparedStatement pstmt = conn.prepareStatement(sql);
+         ResultSet rs = pstmt.executeQuery()) {
+        
+        out.println("<table>");
+
+        if (tableName.equals("Hotels")) {
+            out.println("<tr><th>ID</th><th>Catégorie</th><th>Adresse</th><th>ID Manager</th><th>Emails</th><th>Téléphone</th><th>Actions</th></tr>");
+            while (rs.next()) {
+                int id = rs.getInt("Hotel_ID");
+                out.println("<tr><td>" + id + "</td><td>" + rs.getInt("categorie") + " ★</td><td>" + rs.getString("adresse") + "</td>");
+                out.println("<td>" + rs.getInt("Manager_id") + "</td><td>" + rs.getString("Emails") + "</td><td>" + rs.getString("Telephone") + "</td>");
+                out.println("<td>" + getActionLinks(tableName, id) + "</td></tr>");
             }
-            else if (tableName.equals("Clients")) {
-                out.println("<tr><th>Client ID</th><th>Name</th><th>Email</th><th>Actions</th></tr>");
-                while (rs.next()) {
-                    int id = rs.getInt("client_id");
-                    out.println("<tr>");
-                    out.println("<td>" + id + "</td>");
-                    out.println("<td>" + rs.getString("Nom") + "</td>");
-                    out.println("<td>" + rs.getString("client_Email") + "</td>");
-                    out.println("<td><a href='testdb?action=editRecord&tableName=Clients&id=" + id + "'>Edit</a> | <a href='testdb?action=deleteRecord&tableName=Clients&id=" + id + "' style='color:red;'>Delete</a></td>");
-                    out.println("</tr>");
-                }
+        } 
+        else if (tableName.equals("Chambres")) {
+            out.println("<tr><th>ID</th><th>Hôtel</th><th>No.</th><th>Prix</th><th>Capacité</th><th>Commodités</th><th>Vue</th><th>Lit Extra</th><th>Superficie</th><th>État</th><th>Actions</th></tr>");
+            while (rs.next()) {
+                int id = rs.getInt("Chambre_ID");
+                out.println("<tr><td>" + id + "</td><td>" + rs.getInt("Hotel_ID") + "</td><td>" + rs.getInt("Room_number") + "</td>");
+                out.println("<td>" + rs.getInt("Prix") + " $</td><td>" + rs.getInt("Capacite") + " pers.</td><td>" + rs.getString("Commodites") + "</td>");
+                out.println("<td>" + rs.getString("Vue") + "</td><td>" + (rs.getBoolean("Lit_Extra") ? "Oui" : "Non") + "</td>");
+                out.println("<td>" + rs.getInt("Superficie") + " m²</td><td>" + rs.getString("Etat") + "</td>");
+                out.println("<td>" + getActionLinks(tableName, id) + "</td></tr>");
             }
-            out.println("</table>");
-            out.println("<br><button type='button' onclick='history.back()'>Retourner</button>");
-            out.println("</body></html>");
+        }
+        else if (tableName.equals("Employes")) {
+            out.println("<tr><th>ID</th><th>Nom Complet</th><th>Adresse</th><th>Rôle</th><th>ID Hôtel</th><th>Actions</th></tr>");
+            while (rs.next()) {
+                int id = rs.getInt("Employe_ID");
+                out.println("<tr><td>" + id + "</td><td>" + rs.getString("Nom_complet") + "</td><td>" + rs.getString("Addresse") + "</td>");
+                out.println("<td>" + rs.getString("Role") + "</td><td>" + rs.getInt("Hotel_ID") + "</td>");
+                out.println("<td>" + getActionLinks(tableName, id) + "</td></tr>");
             }
+        }
+        else if (tableName.equals("Clients")) {
+            out.println("<tr><th>ID</th><th>Nom</th><th>Email</th><th>Adresse</th><th>Actions</th></tr>");
+            while (rs.next()) {
+                int id = rs.getInt("client_id");
+                out.println("<tr><td>" + id + "</td><td>" + rs.getString("Nom") + "</td><td>" + rs.getString("client_Email") + "</td>");
+                out.println("<td>" + rs.getString("Addresse") + "</td>");
+                out.println("<td>" + getActionLinks(tableName, id) + "</td></tr>");
             }
+        }
+        out.println("</table><br>");
+        out.println("<a href='index.jsp'><button type='button'>Retour à l'accueil</button></a>");
+        out.println("</body></html>");
+    }
+}
+
+
+private String getActionLinks(String tableName, int id) {
+    return "<a href='testdb?action=editRecord&tableName=" + tableName + "&id=" + id + "'>Modifier</a> | " +
+           "<a href='testdb?action=deleteRecord&tableName=" + tableName + "&id=" + id + "' style='color:red;' onclick='return confirm(\"Voulez-vous vraiment supprimer cet élément ?\")'>Supprimer</a>";
+}
 
     private void deleteTableRecord(HttpServletRequest request, Connection conn, PrintWriter out) throws SQLException {
         String tableName = request.getParameter("tableName");
@@ -477,6 +479,70 @@ public class Test extends HttpServlet {
     }
 }
 
+private void EditForm(HttpServletRequest request, Connection conn, PrintWriter out) throws SQLException {
+    String tableName = request.getParameter("tableName");
+    String ID = request.getParameter("id");
+    String tableCol="";
+        //find the id of the selected row
+        if (tableName.equals("Hotels")) {
+            tableCol = "Hotel_ID";}
+        else if (tableName.equals("Chambres")){
+             tableCol = "Chambre_ID";}
+        else if (tableName.equals("Employes")){
+             tableCol = "Employe_ID";}
+        else if (tableName.equals("Clients")){
+             tableCol = "client_id";}
+    String sql = "SELECT * FROM " + tableName + " WHERE " + tableCol + " = ?";
+    try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        pstmt.setInt(1, Integer.parseInt(ID));
+        //prints relevent info so it can be eddited
+        try (ResultSet rs = pstmt.executeQuery()) {
+            if (rs.next()) {
+                out.println("<html><head><meta charset='UTF-8'></head><body>");
+                out.println("<h2>Modifier l'enregistrement (ID: " + ID + ")</h2>");
+                out.println("<form action='testdb' method='GET' style='line-height: 2;'>");
+                out.println("<input type='hidden' name='action' value='updateRecord'>");
+                out.println("<input type='hidden' name='tableName' value='" + tableName + "'>");
+                out.println("<input type='hidden' name='id' value='" + ID + "'>");
+
+                if (tableName.equals("Hotels")) {
+                    out.println("Catégorie : <input type='number' name='cat' value='" + rs.getInt("categorie") + "'> étoiles<br>");
+                    out.println("Adresse : <input type='text' name='addr' value='" + rs.getString("adresse") + "'><br>");
+                    out.println("ID Manager : <input type='number' name='manID' value='" + rs.getInt("Manager_id") + "'><br>");
+                    out.println("Emails : <input type='text' name='emails' value='" + rs.getString("Emails") + "'><br>");
+                    out.println("Téléphone : <input type='text' name='phone' value='" + rs.getString("Telephone") + "'><br>");
+                } 
+                else if (tableName.equals("Chambres")) {
+                    out.println("Numéro de chambre : <input type='number' name='rNum' value='" + rs.getInt("Room_number") + "'><br>");
+                    out.println("Prix : <input type='number' name='prix' value='" + rs.getInt("Prix") + "'> $<br>");
+                    out.println("Capacité : <input type='number' name='cap' value='" + rs.getInt("Capacite") + "'> personnes<br>");
+                    out.println("Commodités : <input type='text' name='com' value='" + rs.getString("Commodites") + "'><br>");
+                    out.println("Vue : <input type='text' name='vue' value='" + rs.getString("Vue") + "'><br>");
+                    out.println("Lit Extra : <select name='extra'>");
+                    out.println("<option value='true' " + (rs.getBoolean("Lit_Extra") ? "selected" : "") + ">Oui</option>");
+                    out.println("<option value='false' " + (!rs.getBoolean("Lit_Extra") ? "selected" : "") + ">Non</option>");
+                    out.println("</select><br>");
+                    out.println("Superficie : <input type='number' name='sup' value='" + rs.getInt("Superficie") + "'> m²<br>");
+                    out.println("État : <input type='text' name='etat' value='" + rs.getString("Etat") + "'><br>");
+                }
+                else if (tableName.equals("Employes")) {
+                    out.println("Nom complet : <input type='text' name='nom' value='" + rs.getString("Nom_complet") + "'><br>");
+                    out.println("Adresse : <input type='text' name='addr' value='" + rs.getString("Addresse") + "'><br>");
+                    out.println("Rôle : <input type='text' name='role' value='" + rs.getString("Role") + "'><br>");
+                    out.println("ID Hôtel : <input type='number' name='hID' value='" + rs.getInt("Hotel_ID") + "'><br>");
+                }
+                else if (tableName.equals("Clients")) {
+                    out.println("Nom complet : <input type='text' name='nom' value='" + rs.getString("Nom") + "'><br>");
+                    out.println("Email : <input type='text' name='email' value='" + rs.getString("client_Email") + "'><br>");
+                    out.println("Adresse : <input type='text' name='addr' value='" + rs.getString("Addresse") + "'><br>");
+                }
+
+                out.println("<br><button type='submit'>Sauvegarder les modifications</button>");
+                out.println(" <a href='index.jsp'><button type='button'>Annuler</button></a>");
+                out.println("</form></body></html>");
+            }
+        }
+    }
 }
     
-
+}
